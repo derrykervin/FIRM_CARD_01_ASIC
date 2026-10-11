@@ -1,0 +1,7 @@
+src/card.v:18:module card #(
+src/card_cpu.v:3:module card_cpu(
+src/program_rom.v:2:module program_rom(
+src/uart_tx.v:1:module uart_tx #(
+src/uart_rx.v:1:module uart_rx #(
+src/spi_master.v:2:module spi_master #(
+src/project.v:3:module tt_um_derrykervin_firm_card_01 (

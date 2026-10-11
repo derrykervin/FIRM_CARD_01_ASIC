@@ -1,0 +1,11 @@
+-rw-r--r-- 1 derrykervin derrykervin 780 Oct 11 22:26 info.yaml
+
+src:
+total 48K
+-rw-r--r-- 1 derrykervin derrykervin 8.2K Oct 11 22:26 card.v
+-rw-r--r-- 1 derrykervin derrykervin 4.5K Oct 11 22:26 card_cpu.v
+-rw-r--r-- 1 derrykervin derrykervin 8.1K Oct 11 22:26 program_rom.v
+-rw-r--r-- 1 derrykervin derrykervin 1.2K Oct 11 22:26 project.v
+-rw-r--r-- 1 derrykervin derrykervin 2.4K Oct 11 22:26 spi_master.v
+-rw-r--r-- 1 derrykervin derrykervin 2.4K Oct 11 22:26 uart_rx.v
+-rw-r--r-- 1 derrykervin derrykervin 1.6K Oct 11 22:26 uart_tx.v

@@ -1,0 +1,17 @@
+{
+  "DESIGN_NAME": "tt_um_derrykervin_firm_card_01",
+  "VERILOG_FILES": [
+    "dir::project.v",
+    "dir::card.v",
+    "dir::card_cpu.v",
+    "dir::program_rom.v",
+    "dir::uart_tx.v",
+    "dir::uart_rx.v",
+    "dir::spi_master.v"
+  ],
+  "DIE_AREA": "0 0 161.00 111.52",
+  "FP_DEF_TEMPLATE": "dir::../tt/tech/sky130A/def/tt_block_1x1_pg.def",
+  "VDD_PIN": "VPWR",
+  "GND_PIN": "VGND",
+  "RT_MAX_LAYER": "met4"
+}

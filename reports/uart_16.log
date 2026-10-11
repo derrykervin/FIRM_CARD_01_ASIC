@@ -1,0 +1,2 @@
+PASS UART CPB=16: VERSION, ID, 3 AUTH vectors, repeat, unknown, partial/reset
+test/card_tb.v:97: $finish called at 241230000 (1ps)

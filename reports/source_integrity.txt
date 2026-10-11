@@ -1,0 +1,8 @@
+Archive: /mnt/c/Users/DERRYKERVIN/Documents/Codex/2026-10-10/referenced-chatgpt-conversation-this-is-an-3/outputs/FIRM_CARD_01_TAPEOUT.zip
+Archive SHA256: 283f8bf10a3093fbefb7492e906622e25ab50c5a3a15ab91924fe617e190d27b
+914e2b4214819c1314b7445c24f7acc33cf7e6fcba515cb88ca4c7986eaa2b8a  src/card.v  MATCH
+ff2887c49f697a38eca2e5959a82d1892f82451c208cfc308b17e167d8b85ade  src/card_cpu.v  MATCH
+f8aedb6aad2f111cb93589debebb58d89f1923decaa0b389af252d7ad22e7959  src/program_rom.v  MATCH
+db8f968dc966891a16b149e9980440b0faed5560b64a53e82561096e59154a2b  src/uart_tx.v  MATCH
+28211e4fd74c82eb4e267d1b356da5a8faa742ad79bb9347ada162025948d7dc  src/uart_rx.v  MATCH
+8afe20ed13296abc5d0dedbffbd40887b5ca534bb6c572790428ff67527df080  src/spi_master.v  MATCH

@@ -1,0 +1,2 @@
+PASS wrapper: reset, defined outputs, bidirectional pads remain inputs
+test/wrapper_tb.v:21: $finish called at 1000400000 (1ps)

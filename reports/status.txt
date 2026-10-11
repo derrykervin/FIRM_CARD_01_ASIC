@@ -1,0 +1,16 @@
+modules exit=0
+directory exit=0
+syntax exit=0
+synthesis exit=0
+tt_config exit=0
+precheck_help exit=1
+uart_compile_8 exit=0
+uart_8 exit=0
+uart_compile_16 exit=0
+uart_16 exit=0
+uart_compile_434 exit=0
+uart_434 exit=0
+mmio_compile exit=0
+mmio exit=0
+wrapper exit=0
+precheck_help_retry exit=0
