@@ -4,8 +4,8 @@ project:
   discord: ""
   description: "CardMCU C1 tapeout core with UART and debug outputs"
   language: "Verilog"
-  clock_hz: 10000000
-  tiles: "1x1"
+  clock_hz: 40000000
+  tiles: "1x2"
   top_module: "tt_um_derrykervin_firm_card_01"
   source_files:
     - "project.v"

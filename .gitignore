@@ -1,0 +1,27 @@
+.DS_Store
+.idea
+
+# Simulation
+*.vcd
+*.fst
+*.fst.hier
+*.vvp
+test/sim_build/
+test/__pycache__/
+test/results.xml
+test/gate_level_netlist.v
+
+# TinyTapeout / LibreLane generated
+runs/
+tt_submission/
+src/user_config.json
+src/config_merged.json
+
+# Local TinyTapeout support tools
+tt/
+
+# Local reports / renders
+gds_render.png
+gds_render_preview.svg
+violations.txt
+.venv-test/

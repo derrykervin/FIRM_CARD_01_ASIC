@@ -12,7 +12,7 @@ module tt_um_derrykervin_firm_card_01 (
 );
     wire uart_tx, spi_sclk, spi_mosi, spi_cs_n, halted;
     wire [7:0] gpio_out, debug_pc, debug_r0;
-    card u_card (
+    card #(.UART_CLKS_PER_BIT(347)) u_card (
         .clk(clk), .reset_n(rst_n),
         .gpio_in(8'h00), .gpio_out(gpio_out),
         .uart_rx(ui_in[0]), .uart_tx(uart_tx),
