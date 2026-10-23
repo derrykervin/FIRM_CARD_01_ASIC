@@ -1,5 +1,5 @@
 `default_nettype none
-// Thin TinyTapeout adapter. Core sources and default parameters are unchanged.
+// TinyTapeout adapter: 40 MHz clock, UART divisor 347; GPIO input and SPI MISO tied low.
 module tt_um_derrykervin_firm_card_01 (
     input wire [7:0] ui_in,
     output wire [7:0] uo_out,
