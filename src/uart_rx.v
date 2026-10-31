@@ -17,6 +17,16 @@ module uart_rx #(
     reg [15:0] clk_count;
     reg [2:0]  bit_index;
     reg [7:0]  shift_reg;
+    // Only the first stage samples the pad. FSM/data sampling use stage two.
+    // This reduces CDC risk; digital simulation does not establish an MTBF.
+`ifndef FIRM_CVC_NO_ASYNC_ATTR
+    (* ASYNC_REG = "TRUE" *)
+`endif
+    reg rx_meta, rx_sync;
+    always @(posedge clk or negedge reset_n) begin
+        if (!reset_n) begin rx_meta<=1'b1; rx_sync<=1'b1; end
+        else begin rx_meta<=rx; rx_sync<=rx_meta; end
+    end
 
     always @(posedge clk or negedge reset_n) begin
         if (!reset_n) begin
@@ -32,14 +42,14 @@ module uart_rx #(
                 S_IDLE: begin
                     clk_count <= 16'd0;
                     bit_index <= 3'd0;
-                    if (!rx)
+                    if (!rx_sync)
                         state <= S_START;
                 end
 
                 S_START: begin
                     if (clk_count == (CLKS_PER_BIT/2)) begin
                         clk_count <= 16'd0;
-                        if (!rx)
+                        if (!rx_sync)
                             state <= S_DATA;
                         else
                             state <= S_IDLE;
@@ -51,7 +61,7 @@ module uart_rx #(
                 S_DATA: begin
                     if (clk_count == CLKS_PER_BIT - 1) begin
                         clk_count <= 16'd0;
-                        shift_reg[bit_index] <= rx;
+                        shift_reg[bit_index] <= rx_sync;
                         if (bit_index == 3'd7) begin
                             bit_index <= 3'd0;
                             state <= S_STOP;
@@ -69,7 +79,7 @@ module uart_rx #(
                         // A low stop bit is not a byte. Wait for idle high
                         // before rearming so a sustained BREAK cannot emit
                         // fabricated zero bytes.
-                        if (rx) begin
+                        if (rx_sync) begin
                             data_out <= shift_reg;
                             valid <= 1'b1;
                             state <= S_IDLE;
@@ -82,7 +92,7 @@ module uart_rx #(
                 end
                 S_RECOVER: begin
                     clk_count <= 16'd0;
-                    if (rx) state <= S_IDLE;
+                    if (rx_sync) state <= S_IDLE;
                 end
                 default: begin
                     state <= S_IDLE;

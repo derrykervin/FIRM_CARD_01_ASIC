@@ -30,6 +30,9 @@ module uart_rx_fault_tb;
             bit_time(0);
             for(i=0;i<8;i=i+1) bit_time(value[i]);
             bit_time(stop);
+            // bit_time returns one cycle before the bit boundary. Complete the
+            // stop interval before inspecting a pipelined receiver's result.
+            @(negedge clk);
         end
     endtask
     task count_is;
@@ -43,7 +46,7 @@ module uart_rx_fault_tb;
         #1 reset_n=0;
         repeat(3) @(negedge clk); reset_n=1;
         expected=8'hA5; frame(8'hA5,1); count_is(1);
-        // Consecutive valid frame with only the normal stop interval.
+        // Subsequent valid frame; zero-gap frames are covered by uart_async_tb.
         expected=8'h3C; frame(8'h3C,1); count_is(2);
         // Rejected data must never reach the valid-byte consumer.
         frame(8'h7E,0);

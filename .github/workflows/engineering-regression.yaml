@@ -28,6 +28,8 @@ jobs:
           python3 -B -m unittest discover -s FIRM-SYSTEM-SPECS/validation -p 'test_*.py' -v
       - name: Core RTL, MISO wrapper and generic synthesis
         run: bash tools/check.sh
+      - name: UART asynchronous phase, rate and jitter matrix
+        run: python3 -B tools/run_uart_async.py --output reports/current/uart-async
       - name: Preserve core evidence
         if: always()
         uses: actions/upload-artifact@v7

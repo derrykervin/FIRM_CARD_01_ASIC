@@ -47,7 +47,9 @@ def main():
                 raise ValueError(f'{bench}: cannot override {key}')
         test_copy = work/bench.name
         test_copy.write_text(source)
-        command = [str(cvc), '+interp', *map(str, sources), str(test_copy)]
+        # This legacy CVC crashes on the string ASYNC_REG attribute. The define
+        # removes only synthesis metadata; both synchronizer registers remain.
+        command = [str(cvc), '+interp', '+define+FIRM_CVC_NO_ASYNC_ATTR', *map(str, sources), str(test_copy)]
         if args.toggle_coverage and not negative:
             modules = set()
             for source_file in sources:
