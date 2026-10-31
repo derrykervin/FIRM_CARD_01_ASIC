@@ -1,0 +1,66 @@
+name: signoff-evidence
+on:
+  push:
+    paths:
+      - 'tools/collect_signoff.py'
+      - 'tools/test_collect_signoff.py'
+      - '.github/workflows/signoff-evidence.yaml'
+  workflow_dispatch:
+permissions:
+  contents: read
+  actions: read
+env:
+  SOURCE_RUN: '41204144286'
+  SOURCE_SHA: '559a1d6d4050d1dc3d2f3330af9072d9ac5a553c'
+  TOP_MODULE: 'tt_um_derrykervin_firm_card_01'
+jobs:
+  collect:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v6
+      - uses: actions/setup-python@v6
+        with:
+          python-version: '3.11'
+      - name: Validate collector failure controls
+        run: python3 -B -m unittest discover -s tools -p 'test_collect_signoff.py' -v
+      - name: Verify pinned source run and successful build
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          gh api "repos/$GITHUB_REPOSITORY/actions/runs/$SOURCE_RUN" > signoff-source-run.json
+          gh api "repos/$GITHUB_REPOSITORY/actions/runs/$SOURCE_RUN/jobs" > signoff-source-jobs.json
+          python3 - <<'CHECK'
+          import json, os
+          run=json.load(open('signoff-source-run.json'))
+          jobs=json.load(open('signoff-source-jobs.json'))['jobs']
+          assert run['head_sha']==os.environ['SOURCE_SHA'], 'Source SHA mismatch'
+          assert any(j['name']=='gds' and j['conclusion']=='success' for j in jobs), 'No successful build'
+          CHECK
+      - name: Fetch pinned build reports
+        uses: actions/download-artifact@v7
+        with:
+          name: GDS_logs
+          run-id: ${{ env.SOURCE_RUN }}
+          github-token: ${{ github.token }}
+          path: .signoff-input
+      - name: Fetch pinned submission artifacts
+        uses: actions/download-artifact@v7
+        with:
+          name: tt_submission
+          run-id: ${{ env.SOURCE_RUN }}
+          github-token: ${{ github.token }}
+          path: .signoff-submission
+      - name: Collect timing constraints, corner metrics and layout digests
+        run: |
+          python3 -B tools/collect_signoff.py --logs .signoff-input --submission .signoff-submission --output signoff-evidence --source-sha "$SOURCE_SHA" --source-run "$SOURCE_RUN" --top "$TOP_MODULE"
+      - name: Preserve signoff evidence and provenance
+        if: always()
+        uses: actions/upload-artifact@v7
+        with:
+          name: signoff-evidence
+          path: |
+            signoff-evidence/
+            signoff-source-run.json
+            signoff-source-jobs.json
+          if-no-files-found: error
