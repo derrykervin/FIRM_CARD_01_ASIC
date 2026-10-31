@@ -7,12 +7,13 @@ module uart_rx #(
     output reg  [7:0] data_out,
     output reg        valid
 );
-    localparam S_IDLE  = 2'd0;
-    localparam S_START = 2'd1;
-    localparam S_DATA  = 2'd2;
-    localparam S_STOP  = 2'd3;
+    localparam S_IDLE    = 3'd0;
+    localparam S_START   = 3'd1;
+    localparam S_DATA    = 3'd2;
+    localparam S_STOP    = 3'd3;
+    localparam S_RECOVER = 3'd4;
 
-    reg [1:0]  state;
+    reg [2:0]  state;
     reg [15:0] clk_count;
     reg [2:0]  bit_index;
     reg [7:0]  shift_reg;
@@ -65,12 +66,27 @@ module uart_rx #(
                 S_STOP: begin
                     if (clk_count == CLKS_PER_BIT - 1) begin
                         clk_count <= 16'd0;
-                        data_out  <= shift_reg;
-                        valid     <= 1'b1;
-                        state     <= S_IDLE;
+                        // A low stop bit is not a byte. Wait for idle high
+                        // before rearming so a sustained BREAK cannot emit
+                        // fabricated zero bytes.
+                        if (rx) begin
+                            data_out <= shift_reg;
+                            valid <= 1'b1;
+                            state <= S_IDLE;
+                        end else begin
+                            state <= S_RECOVER;
+                        end
                     end else begin
                         clk_count <= clk_count + 16'd1;
                     end
+                end
+                S_RECOVER: begin
+                    clk_count <= 16'd0;
+                    if (rx) state <= S_IDLE;
+                end
+                default: begin
+                    state <= S_IDLE;
+                    clk_count <= 16'd0;
                 end
             endcase
         end

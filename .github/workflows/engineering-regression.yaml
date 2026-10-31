@@ -1,0 +1,62 @@
+name: engineering-regression
+on:
+  push:
+  pull_request:
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  card-core:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v6
+      - uses: actions/setup-python@v6
+        with:
+          python-version: '3.11'
+      - name: Install RTL tools
+        run: sudo apt-get update && sudo apt-get install -y iverilog yosys
+      - name: Capture source and tool versions
+        run: |
+          mkdir -p reports/current
+          git rev-parse HEAD > reports/current/source-sha.txt
+          iverilog -V > reports/current/iverilog-version.txt 2>&1
+          yosys -V > reports/current/yosys-version.txt
+      - name: Reference protocol regression
+        run: |
+          python3 -m pip install -r FIRM-SYSTEM-SPECS/requirements-reference.txt
+          python3 -B -m unittest discover -s FIRM-SYSTEM-SPECS/validation -p 'test_*.py' -v
+      - name: Core RTL, MISO wrapper and generic synthesis
+        run: bash tools/check.sh
+      - name: Preserve core evidence
+        if: always()
+        uses: actions/upload-artifact@v7
+        with:
+          name: card-engineering-evidence
+          path: reports/current/
+          if-no-files-found: error
+  experimental-rx:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v6
+      - uses: actions/setup-python@v6
+        with:
+          python-version: '3.11'
+      - name: Install simulator
+        run: sudo apt-get update && sudo apt-get install -y iverilog
+      - name: Execute experimental RTL scoreboard
+        shell: bash
+        run: |
+          set -euo pipefail
+          mkdir -p reports/experimental
+          bash experimental/protocol_v2/check.sh 2>&1 | tee reports/experimental/simulation.log
+      - name: Preserve experimental evidence
+        if: always()
+        uses: actions/upload-artifact@v7
+        with:
+          name: experimental-rx-evidence
+          path: |
+            reports/experimental/
+            experimental/protocol_v2/build/vectors.vh
+          if-no-files-found: error

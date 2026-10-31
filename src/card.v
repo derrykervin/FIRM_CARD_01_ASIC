@@ -177,14 +177,15 @@ module card #(
         end else begin
             timer_counter <= timer_counter + 32'h00000001;
 
+            // Reading acknowledges the old latched byte. A simultaneous new
+            // receive must win so its pending indication is not lost.
+            if (io_re && (io_addr == 8'h11))
+                uart_rx_pending <= 1'b0;
+
             if (uart_rx_valid_pulse) begin
                 uart_rx_latch   <= uart_rx_data;
                 uart_rx_pending <= 1'b1;
             end
-
-            // Reading UART_DATA acknowledges the latched receive byte.
-            if (io_re && (io_addr == 8'h11))
-                uart_rx_pending <= 1'b0;
 
             if (io_we) begin
                 case (io_addr)

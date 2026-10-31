@@ -11,6 +11,7 @@ giving approximately 115273.8 baud (8N1). The 1x2 tile allocation is required.
 | Port | Function |
 |---|---|
 | ui[0] | UART RX |
+| ui[1] | SPI MISO (external input; idle bias supplied by carrier) |
 | uo[0] | UART TX |
 | uo[1] | SPI SCLK |
 | uo[2] | SPI MOSI |
@@ -19,8 +20,8 @@ giving approximately 115273.8 baud (8N1). The 1x2 tile allocation is required.
 | uo[7:5] | debug PC bits 2:0 |
 | uio[7:0] | unused, output-enable fixed zero |
 
-GPIO input and SPI MISO are tied to zero. GPIO outputs are not exported.
-SPI readback and external GPIO are therefore unavailable in this wrapper.
+GPIO input is tied to zero. GPIO outputs are not exported.
+SPI readback is routed from ui[1]; external GPIO remains unavailable.
 
 ## How to test
 Configure the shuttle mux, supply a 40 MHz clock, assert rst_n low, then release.
