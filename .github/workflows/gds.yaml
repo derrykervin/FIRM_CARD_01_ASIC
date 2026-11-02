@@ -18,6 +18,24 @@ jobs:
         with:
           pdk: sky130A
 
+      - name: Validate signoff collector failure controls
+        run: python3 -B -m unittest discover -s tools -p 'test_collect_signoff.py' -v
+
+      - name: Collect current build signoff evidence
+        run: >-
+          python3 -B tools/collect_signoff.py
+          --logs runs/wokwi --submission tt_submission --output signoff-evidence
+          --source-sha "$GITHUB_SHA" --source-run "$GITHUB_RUN_ID"
+          --top tt_um_derrykervin_firm_card_01
+
+      - name: Preserve current build signoff evidence
+        if: always()
+        uses: actions/upload-artifact@v7
+        with:
+          name: signoff-evidence
+          path: signoff-evidence/
+          if-no-files-found: error
+
   precheck:
     needs: gds
     runs-on: ubuntu-24.04
