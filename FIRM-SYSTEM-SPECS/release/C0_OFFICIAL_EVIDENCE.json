@@ -1,0 +1,109 @@
+{
+  "official_repository": "TinyTapeout/tinytapeout-sky-26d",
+  "observed_head": "5b12186dac87496dfeaabcf9d9aa2460b399c58a",
+  "pr_url": "https://github.com/TinyTapeout/tinytapeout-sky-26d/pull/58",
+  "merged": true,
+  "merged_at": "2026-10-02T16:46:11Z",
+  "merge_commit_sha": "55b75ab6e7d66eb99d1d36aaea9ee2d89520fbf0",
+  "body": "Update project tt_um_derrykervin_cardmcu_c0 to commit derrykervin/CardMCU_ASIC@a6b79b461ca6d7393cf94d1c49c2527a2b5b13cd\n\nProject title: CardMCU C0\nTiles: 1x1\nWorkflow: https://github.com/derrykervin/CardMCU_ASIC/actions/runs/37032191244\nProject submission: https://app.tinytapeout.com/projects/6057",
+  "project_url": "https://app.tinytapeout.com/projects/6057",
+  "source_commit": "a6b79b461ca6d7393cf94d1c49c2527a2b5b13cd",
+  "official_files": [
+    {
+      "path": "projects/tt_um_derrykervin_cardmcu_c0/LICENSE",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "261eeb9e9f8b2b4b0d119366dda99c6fd7d35c64",
+      "size": 11357,
+      "url": "https://api.github.com/repos/TinyTapeout/tinytapeout-sky-26d/git/blobs/261eeb9e9f8b2b4b0d119366dda99c6fd7d35c64"
+    },
+    {
+      "path": "projects/tt_um_derrykervin_cardmcu_c0/commit_id.json",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "7c1ef3255adaadfe562b00abad5d00a99ebf0942",
+      "size": 294,
+      "url": "https://api.github.com/repos/TinyTapeout/tinytapeout-sky-26d/git/blobs/7c1ef3255adaadfe562b00abad5d00a99ebf0942"
+    },
+    {
+      "path": "projects/tt_um_derrykervin_cardmcu_c0/docs",
+      "mode": "040000",
+      "type": "tree",
+      "sha": "fa334d49a05ab805707cf59302773ca5163cb23b",
+      "url": "https://api.github.com/repos/TinyTapeout/tinytapeout-sky-26d/git/trees/fa334d49a05ab805707cf59302773ca5163cb23b"
+    },
+    {
+      "path": "projects/tt_um_derrykervin_cardmcu_c0/docs/info.md",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "04a8d82d091ee1a99923b683d51bf52f56a53b95",
+      "size": 1433,
+      "url": "https://api.github.com/repos/TinyTapeout/tinytapeout-sky-26d/git/blobs/04a8d82d091ee1a99923b683d51bf52f56a53b95"
+    },
+    {
+      "path": "projects/tt_um_derrykervin_cardmcu_c0/info.yaml",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "9fb8929e5e27948f7ca8751439d21768eede7600",
+      "size": 1127,
+      "url": "https://api.github.com/repos/TinyTapeout/tinytapeout-sky-26d/git/blobs/9fb8929e5e27948f7ca8751439d21768eede7600"
+    },
+    {
+      "path": "projects/tt_um_derrykervin_cardmcu_c0/pdk.json",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "7b50bacefeade88131da06260d934cecaf6cd4c8",
+      "size": 168,
+      "url": "https://api.github.com/repos/TinyTapeout/tinytapeout-sky-26d/git/blobs/7b50bacefeade88131da06260d934cecaf6cd4c8"
+    },
+    {
+      "path": "projects/tt_um_derrykervin_cardmcu_c0/stats",
+      "mode": "040000",
+      "type": "tree",
+      "sha": "2a3fa59246a090ef7a457a751fc2dab8be864a9c",
+      "url": "https://api.github.com/repos/TinyTapeout/tinytapeout-sky-26d/git/trees/2a3fa59246a090ef7a457a751fc2dab8be864a9c"
+    },
+    {
+      "path": "projects/tt_um_derrykervin_cardmcu_c0/stats/metrics.csv",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "7d09ffd6675f7f85278560411811d136c3b6339c",
+      "size": 15438,
+      "url": "https://api.github.com/repos/TinyTapeout/tinytapeout-sky-26d/git/blobs/7d09ffd6675f7f85278560411811d136c3b6339c"
+    },
+    {
+      "path": "projects/tt_um_derrykervin_cardmcu_c0/stats/synthesis-stats.txt",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "17592982e4482156a9f9aa2af7e2700cc3706188",
+      "size": 3130,
+      "url": "https://api.github.com/repos/TinyTapeout/tinytapeout-sky-26d/git/blobs/17592982e4482156a9f9aa2af7e2700cc3706188"
+    },
+    {
+      "path": "projects/tt_um_derrykervin_cardmcu_c0/tt_um_derrykervin_cardmcu_c0.lef",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "de4cff7826bc64e07b7da15094d25fed215f6ab1",
+      "size": 11267,
+      "url": "https://api.github.com/repos/TinyTapeout/tinytapeout-sky-26d/git/blobs/de4cff7826bc64e07b7da15094d25fed215f6ab1"
+    },
+    {
+      "path": "projects/tt_um_derrykervin_cardmcu_c0/tt_um_derrykervin_cardmcu_c0.oas",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "3148c607c0eb456bd09cf8497fe633a48ab2f97c",
+      "size": 128267,
+      "url": "https://api.github.com/repos/TinyTapeout/tinytapeout-sky-26d/git/blobs/3148c607c0eb456bd09cf8497fe633a48ab2f97c"
+    },
+    {
+      "path": "projects/tt_um_derrykervin_cardmcu_c0/tt_um_derrykervin_cardmcu_c0.v",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "d32f46b8911adef1eec4c06b1961eeb0f7cc23ca",
+      "size": 322070,
+      "url": "https://api.github.com/repos/TinyTapeout/tinytapeout-sky-26d/git/blobs/d32f46b8911adef1eec4c06b1961eeb0f7cc23ca"
+    }
+  ],
+  "firm_card_reader_paths": [],
+  "scope": "C0 only; repository inclusion and merged update confirmed; not fabrication/delivery confirmation"
+}
