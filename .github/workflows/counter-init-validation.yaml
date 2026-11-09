@@ -161,7 +161,7 @@ jobs:
           report=a.measure(json.loads(raw),a.liberty_cells(Path('pdk/liberty.lib').read_text()),a.lef_cells(Path('pdk/cells.lef').read_text()),generic_ff)
           meta=json.loads(Path('provenance.json').read_text())
           assert meta["source_sha"]=='14e6fc8adbec208353da2f792bfe2f196bb5a702'
-          report.update(provenance=meta,library=files,orfs_commit=a.ORFS,tile_source_commit=a.TT,tile_1x2_total_um2='36347.36',baseline_area_um2='41922.7072',baseline_ff=894,generic_ff_cells=generic_ff,resource_counts=resource_counts,mapped_netlist_sha256=a.sha(raw),generic_netlist_sha256=a.sha(Path('reports/session-flat.json').read_bytes()),workflow_sha=os.environ['GITHUB_SHA'],run_id=os.environ['GITHUB_RUN_ID'],scope='experimental session only; measured cell area, no equivalence, STA, placement or signoff')
+          report.update(provenance=meta,library=files,orfs_commit=a.ORFS,tile_source_commit=a.TT,tile_1x2_total_um2='36347.36',baseline_area_um2='41922.7072',baseline_ff=895,generic_ff_cells=generic_ff,resource_counts=resource_counts,mapped_netlist_sha256=a.sha(raw),generic_netlist_sha256=a.sha(Path('reports/session-flat.json').read_bytes()),workflow_sha=os.environ['GITHUB_SHA'],run_id=os.environ['GITHUB_RUN_ID'],scope='experimental session only; measured cell area, no equivalence, STA, placement or signoff')
           report['exceeds_total_tile']=float(report['area_um2'])>36347.36
           Path('reports/counter-area.json').write_text(json.dumps(report,indent=2)+'\n')
           print('BEGIN_COUNTER_AREA_EVIDENCE');print(json.dumps(report));print('END_COUNTER_AREA_EVIDENCE')
