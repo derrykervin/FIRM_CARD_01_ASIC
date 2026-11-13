@@ -6,6 +6,20 @@
 已知风险：旧版认证不安全；平台未提交；封装未确认。
 
 # 接续开发记录
+
+## 2026-11-13 十三命令与配置/公钥精确比较接入完整CARD实验：2150FF/92003.2384µm²，正式封装/注册身份/物理签核仍未完成
+
+独立engineering/2026-11-13-personalized-session，base400d8e08d8514004e1d576df3d3b6e8f351f9c45。先读最新接续/remote-upload/两gate/上轮证据，实时PR2/Reader1仍330c670/94a50b5、base main feaa556/2e3a9cf；最新工程CI42926442424/42926434671/42926434658成功、Reader41419425879联合成功/41419417088 GDS整体失败仍旧Viewer部署404。未重复推已有改动、未改main/C0/正式src/info.yaml；代码写权限历史成功不被本机网络失败推翻。
+
+新的atecc_proof_session在锁定RAM完整22源CARD树中替换旧三命令owner，复用统一producer/exchange和原wake/共享总线：四Config32读+GenKey PUBLIC→Random/Nonce/Sign→四Config32读+GenKey PUBLIC，共十三命令。逐命令payload长度、CRC/count/STOP、完成掩码、64签名字节、分层deadline/abort/removal仍为成功前提。签名字节只临时输出，末次读回失败不能commit。新增所提议slot2/0x60/M0/revision/锁/2087与0033策略检查、空序列号拒绝；保存完整20B不可变header和64B公钥做精确读后比较，不用公开CRC/XOR摘要替代。公共bank未物理擦除，仅逻辑资格管理；未比较可信工厂注册记录，不能称硬件认证/真实安全器件或P256验证。
+
+Icarus/CVC分别按14个源绑定配置验收（六正常166完成场景、八真实RTL反例；Icarus慢div100与其余配置分开记录，最终资格由具体日志/源码/TB哈希汇总，非伪称每个目录全矩阵重跑）。各32768单字节配置变化与Python所提议策略一致、672逐位精确比较控制通过。完整CARD CVC三正常CPB16/DIV2、CPB32/DIV8、CPB434/DIV100各31场共93，另三真实反例；Icarus完整低速31场。40MHz完整CARD CVC四慢配置：十三命令SDK M0 READ5/GENKEY115/Random23/Nonce20/Sign115ms实际STOP/ACK窗口、old20在预公钥计算按预期失败、提前ACK模型拒绝、最后公钥不匹配在64签名字节后失败并无外复位恢复。两摘要上下文26个命令包由原厂固定C构造器/CRC严格原生编译对齐；公钥fixture曲线有效但已知测试标量，签名数据是形状fixture，不是器件密码验证。没有100%覆盖率主张。
+
+同完整边界、同锁Yosys/Liberty+LEF且所有generic FF保留：1450FF/64847.1936→2150FF/92003.2384，增加700FF/27156.0448µm²；新增160header+512公钥位、净28元数据位，另1446状态位以共同命名Q一一对应保留，非形式等价证明。整矩形占比1×2=253.12%、2×2=121.69%、3×2=80.10%、4×2=59.70%；前两连原始cell面积也容不下当前版本，后两尚未P&R，不称物理适配、未选购/确认价格或库存。不能为面积回退到缺少必要比较的版本冒充完整产品。
+
+新2150FF净表的25ns clock-only SDC/Tcl已绑定实际22源/净表/库/根时钟，九坏输入拒绝控制通过；IO/reset/RC仍显式缺失，未设假例外、未运行原生STA，WNS/TNS=null。核对当前Reader正式入口40MHz/CPB347并补测该参数的完整CARD慢M0十三命令；实验CARD默认仍434，最终TT wrapper引脚/波特率对齐及新Reader RTL联合回归仍待完成，不能拿旧联测替代。代码与说明experimental/personalized_session；deliverables/personalized-session保存原始失败/反例、最终资格、冻结重放、全卡面积与FF账本、原厂C、源码zip/SHA/PR草案/发布记录。初始fixture错误、宿主Icarus600s长仿真超时、后续独立1800s宿主限时重跑均真实保留；DUT一秒总期限/200ms命令期限及全部检查未放宽。
+
+两正式维持INCOMPLETE/NOT_SUBMITTED。下一优先正式TT引脚/347分频接入和当前Reader联合、数值STA/物理面积闭合，同时补可信工厂SKU/配置批准、注册UID/key绑定与实际安全器件/HAL/服务器动态挑战。FPGA/实体卡/FPC/触点/Reader实物DEFERRED_BY_USER并保留电气机械残余风险。平台付款/人工配置须基于实际准备与回执报告，push/PR/GDS均不算提交；发布结果单独见publication.json，无回执不称新PR/CI。
 远程创建engineering/2026-10-29-tapeout-audit在CARD/READER均403 Resource not accessible by integration；账号为derrykervin，仓库metadata报告admin/push，但连接token没有实际写分支权限。重新配置GitHub连接/安装，向目标仓库授权Contents read/write、Pull requests read/write；修改workflows还需相应workflow权限。不得展示或索取token正文。
 三个软件主仓库：Unity、FastAPI/SQLAlchemy/MySQL、Drive/OS均未确认。当前账号仓库搜索仅发现已知五仓库；初始/workspace没有Git项目/本地修改。武器编辑器和WFSM不充当主系统。
 两个软件工具仓库默认main：WFS 001fcccaa7493618708a0b9312f11d57d0bf278b，WFSM ac82ec6c55e60220ffb4102ea84c7ffda085ddd0；无开放PR。五仓库审计时均无开放PR。没有改动C0稳定源码。

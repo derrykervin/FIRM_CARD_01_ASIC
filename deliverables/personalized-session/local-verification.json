@@ -1,0 +1,80 @@
+{
+  "status": "PASS_INTEGRATED_13_COMMAND_OBSERVATION_CANDIDATE_ONLY",
+  "tests": {
+    "icarus": {
+      "session_configurations": 14,
+      "normal_session_configurations": 6,
+      "completed_session_scenarios": 166,
+      "real_rtl_defect_controls": 8,
+      "profile_single_byte_cases": 32768,
+      "exact_comparison_bits": 672,
+      "qualification_source_sets": [
+        "final-session-icarus",
+        "session-tail-icarus",
+        "session-remaining-icarus",
+        "session-heavy-icarus"
+      ]
+    },
+    "cvc": {
+      "session_configurations": 14,
+      "normal_session_configurations": 6,
+      "completed_session_scenarios": 166,
+      "real_rtl_defect_controls": 8,
+      "profile_single_byte_cases": 32768,
+      "exact_comparison_bits": 672,
+      "qualification_source_sets": [
+        "final-session-cvc",
+        "session-tail-cvc"
+      ]
+    }
+  },
+  "full_card_cvc_normal_configurations": 3,
+  "full_card_cvc_completed_scenarios": 93,
+  "full_card_cvc_mutants": 3,
+  "full_card_icarus_completed_scenarios": 31,
+  "slow_card_cvc_configurations": 4,
+  "slow_13_commands": true,
+  "reader_40mhz_cpb347_card_model_checked": true,
+  "formal_uart_alignment_pending": true,
+  "late_key_mismatch_then_no_reset_recovery": true,
+  "original_c_commands": 26,
+  "full_card_ff": 2150,
+  "full_card_area_um2": "92003.2384000000",
+  "prior_card_ff": 1450,
+  "prior_card_area_um2": "64847.1936000000",
+  "area_increase_um2": "27156.0448000000",
+  "storage_accounting": {
+    "status": "PASS_ALL_OTHER_1446_STATE_BITS_RETAINED_BY_COMMON_NAMED_Q_ALIAS",
+    "reference_ff": 1450,
+    "personalized_ff": 2150,
+    "reference_changed_fields_bits": 4,
+    "personalized_changed_fields_bits": 704,
+    "header_bits": 160,
+    "public_key_bits": 512,
+    "metadata_net_increase": 28,
+    "ff_increase": 700,
+    "remaining_named_state_bits": 1446,
+    "scope": "Structural storage accounting, not functional equivalence, STA or security proof."
+  },
+  "rectangle_area_percent": {
+    "1x2": "253.1222030981067125645438898",
+    "2x2": "121.6933668740897656560307163",
+    "3x2": "80.10196300572997233055186388",
+    "4x2": "59.69863280615724352937355893"
+  },
+  "rectangle_is_not_physical_fit": true,
+  "proposed_profile_approval": false,
+  "registered_factory_facts_compared": false,
+  "physical_device_validated": false,
+  "p256_or_signature_verified_in_rtl": false,
+  "current_reader_rtl_joint_run": false,
+  "final_tt_wrapper_integrated": false,
+  "clock_sdc_prepared": true,
+  "clock_input_controls": 9,
+  "native_sta_executed": false,
+  "wns_tns": null,
+  "physical_signoff": "NOT_COMPLETE",
+  "hardware_tests": "DEFERRED_BY_USER",
+  "formal_card": "INCOMPLETE_NOT_SUBMITTED",
+  "formal_reader": "INCOMPLETE_NOT_SUBMITTED"
+}

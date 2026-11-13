@@ -1,0 +1,13 @@
+{
+  "base_commit": "9d8400dce12c250344065eda44944d96869d5dfa",
+  "source_records": {
+    "experimental/i2c/firm_i2c_byte.v": "befe74056ab93f0607f104d92c0d085993948ff75be9689775e100d34be2250c",
+    "experimental/i2c/firm_i2c_transaction.v": "8ce5a74ea7bc690892de32e2ea5ad213cb25a933dc4b70d0fa2aadbe983c25e7",
+    "experimental/i2c/atecc_response_check.v": "4042f61ac09410fc5f50c78318ab93ab4cb23e55f7c692c72737e5d179534179",
+    "experimental/i2c/atecc_read_checked.v": "39e35801ae24a65f729227a7d9a6fca794024a398049ff3e3850bfe8deda4665",
+    "experimental/i2c/atecc_command_exchange.v": "ad0f03cf643c76ae3244046b06e8e9c39fdcc567cb7a1251bbe4f16d8b951c55",
+    "experimental/legacy/atecc_command_producer.v": "147efcb8c035c05890ab7d8af979165fbc261d97195abab1b76b2188a5b176ce",
+    "experimental/legacy/atecc_typed_exchange.v": "deffdd5dae1a25cd887ad71bdde0d43008286d4ae09656771a2cd3539b8310f8"
+  },
+  "scope": "Exact unchanged low-level RTL from current measured RAM CARD. Local copies make the isolated readback block reproducible."
+}

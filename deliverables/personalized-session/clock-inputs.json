@@ -1,0 +1,41 @@
+{
+  "mapping": "/workspace/deliverables/personalized-session/mapping",
+  "source_records": {
+    "src/card_cpu.v": "86a99ee89c69df0e3d7239f5a8c00cdbd8ce878b741860a775e37ff1c2fd1cf1",
+    "src/uart_tx.v": "cc00a0ce87fc5ff9000186994b8e02b82535b55316b8cce3a6a1b59758e89aae",
+    "src/uart_rx.v": "6f0d2f124bd1b4c04ad124a62993548b9f936bb02dfed8fa8c3c63866891bf54",
+    "src/spi_master.v": "fc8317998bd1be54953ca0a5966e7ee0db031454fefa7046d208f3f33ffe816e",
+    "src/program_rom.v": "56906039a97b5fc0d30c216ca2f83c93164832664c99ff190b63f793af1a1ef7",
+    "experimental/i2c/firm_i2c_byte.v": "befe74056ab93f0607f104d92c0d085993948ff75be9689775e100d34be2250c",
+    "experimental/i2c/firm_i2c_transaction.v": "8ce5a74ea7bc690892de32e2ea5ad213cb25a933dc4b70d0fa2aadbe983c25e7",
+    "experimental/i2c/atecc_response_check.v": "4042f61ac09410fc5f50c78318ab93ab4cb23e55f7c692c72737e5d179534179",
+    "experimental/i2c/atecc_read_checked.v": "39e35801ae24a65f729227a7d9a6fca794024a398049ff3e3850bfe8deda4665",
+    "experimental/i2c/atecc_command_exchange.v": "ad0f03cf643c76ae3244046b06e8e9c39fdcc567cb7a1251bbe4f16d8b951c55",
+    "experimental/i2c/atecc_wake.v": "38b50a75065f4e70e68b776be087172c5b95a51b750c0f6bf659fecb29032f8a",
+    "experimental/i2c/atecc_proof_session.v": "9ffee51a7c2219dfcf9bc816bb54d46012c205566fc4eb985a5b56e9b3d9497d",
+    "experimental/secure_mailbox/firm_secure_mailbox.v": "0dcea69ad4284a8047dacde03b92106718e0f5e9578f7a1e03c6da2250361a1f",
+    "experimental/secure_mailbox/firm_secure_endpoint.v": "a5ac779baa1c93af2b688a6a020d507e567a7d024b21c3e771e51ccd2c9123b6",
+    "experimental/secure_mailbox/firm_secure_cpu_port.v": "50661bbb027da16c66d5b8372a06e2ed719889170b3212162037582d495c31dc",
+    "experimental/secure_mailbox/firm_card_candidate.v": "86def1d86b26a90023fc6052031e8c518319e34a427dba8faf9b02f5c6dcec50",
+    "experimental/secure_mailbox/firm_serial_request_guard.v": "d8e106750b9200fc4fedd2ec4503f5738fbce5e3f44d31604b09fe379611df22",
+    "experimental/secure_mailbox/firm_card_peripherals.v": "ae482aadf917fb4033eccf4ff69df92c98eabe152f035c41986c00f6c54d5a73",
+    "experimental/secure_mailbox/firm_serial_rom.v": "d1c214b9104dbe89241aa508942ef56812422c2f3b7e5cfe15913b109252f341",
+    "experimental/secure_mailbox/firm_current_budget.v": "e69841e34674bbfb4b7f335b78701c874be51470af2cfb5a948e5249a360c7b1",
+    "experimental/i2c/atecc_unified_producer.v": "2e31d9f6b6a64a7ed243cdc7b6f375b3a8ba5a737e6ab840b83d1b342bebe918",
+    "experimental/i2c/atecc_unified_exchange.v": "3362372b277433a933c8f9bf172936ad0817a2ddb745153bd233d8b8757c721b"
+  },
+  "expected_ff": 2150,
+  "storage": {
+    "header_bits": 160,
+    "public_bits": 512,
+    "changed_metadata_net_bits": 28,
+    "remaining_named_state_bits": 1446
+  },
+  "artifact_sha256": {
+    "/workspace/deliverables/personalized-session/mapping/comparison.json": "73aff85c6bfb798b02ad2b38d74395459a4b39f3bd6bc194534f57d415755415",
+    "/workspace/deliverables/personalized-session/mapping/personalized/firm_current_budget/flat.json": "6f1aa09e94278b4df46e2c272273d81d4c2b4209467c792f24c3c1be931fe720",
+    "/workspace/deliverables/personalized-session/mapping/personalized/firm_current_budget/mapped.json": "b14fa0611317b1fd08f4eee9dc7cc0aa7f7761f60f1b010a64ec245f8d1d894a",
+    "/workspace/deliverables/personalized-session/mapping/personalized/firm_current_budget/mapped.v": "dd26b4af79eda834d64661defbc97522b68676a4a7b2e2a4ea42f991b1ea3c80"
+  },
+  "period_ns": 25
+}
