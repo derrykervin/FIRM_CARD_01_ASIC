@@ -122,8 +122,8 @@ async def transaction(dut,context,late_mismatch=False,identity=False,crc_bad=Fal
     await uart_send(dut,0xa0 if identity else 0xa1)
     if not identity:
         for value in bytes.fromhex(FIXTURE['digests'][context]):await uart_send(dut,value)
-    data,status,error,count=await with_timeout(received,250,unit='ms')
-    await with_timeout(slave,1,unit='ms')
+    data,status,error,count=await with_timeout(received,250,timeout_unit='ms')
+    await with_timeout(slave,1,timeout_unit='ms')
     expected=(bytes.fromhex(FIXTURE['responses'][context*13])[1:21]+bytes.fromhex(FIXTURE['responses'][context*13+4])[1:-2]) if identity else bytes.fromhex(FIXTURE['responses'][context*13+7])[1:-2]
     if crc_bad:expected=b''
     assert data==expected and count==(0 if crc_bad else 84 if identity else 64),'provisional signature bytes/count'
