@@ -8,16 +8,16 @@ module wrapper_tb;
  initial begin
   #1 rst_n=0;
   #200;
-  if (uo_out[0] !== 1'b1 || uio_out !== 0 || uio_oe !== 0) $fatal(1,"Reset/IO state");
+  if (uo_out !== 8'h09 || uio_out !== 0 || uio_oe !== 0) $fatal(1,"Reset/IO state");
   @(negedge clk) rst_n=1;
   repeat (10000) begin
    @(negedge clk);
-   if ((^uo_out) === 1'bx || uio_out !== 0 || uio_oe !== 0) $fatal(1,"Undefined/driven IO");
+   if ((^uo_out) === 1'bx || (^uio_out) === 1'bx || uio_out[1:0] !== 0 || uio_oe[7:2] !== 6'h3f) $fatal(1,"Undefined/driven IO");
   end
   ena=0; ui_in=8'hff; uio_in=8'hff;
   #100;
-  if (uio_oe !== 0 || uio_out !== 0) $fatal(1,"Disabled pads");
-  $display("PASS wrapper: reset, defined outputs, bidirectional pads remain inputs");
+  if (uio_oe !== 0 || uio_out !== 0 || uo_out !== 8'h09) $fatal(1,"Disabled pads");
+  $display("PASS wrapper: reset, defined outputs, open-drain I2C data low, diagnostics defined, ENA isolation");
   $finish;
  end
 endmodule
