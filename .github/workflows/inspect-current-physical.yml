@@ -26,7 +26,7 @@ jobs:
           root=Path('physical-logs')
           reports=[p for p in root.rglob('*.rpt') if 'max_ss_100C_1v60' in str(p)]
           print('SLOW_CORNER_REPORTS',json.dumps([str(p)for p in reports]))
-          selected=[p for p in reports if p.name=='sta.max.rpt']
+          selected=[p for p in reports if p.name in ['sta.max.rpt','max.rpt']]
           if not selected:selected=[p for p in reports if any(w in p.name for w in ['setup','timing'])]
           assert selected, 'No complete slow-corner timing path report found'
           cells=set();recovered=[]
