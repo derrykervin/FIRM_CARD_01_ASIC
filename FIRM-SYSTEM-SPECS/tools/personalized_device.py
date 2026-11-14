@@ -2,8 +2,10 @@
 
 Factory authorization, Steam checks and binding context are server-resolved inputs,
 never client JSON. Configuration CRC/serial/public key are not device attestation.
-The current ASIC ROM still has only Random/Nonce/Sign; this reference's readback
-commands are not integrated into that RTL. No provisioning writes are issued.
+The latest independent ASIC candidate has public-only enumeration and a
+13-command proof observation path. This software reference still does not
+validate physical silicon/HAL or deployed factory/server authority. No
+provisioning writes are issued.
 """
 from dataclasses import dataclass
 from threading import Lock, RLock
@@ -255,6 +257,32 @@ class PersonalizedRegistry:
         if entry is None or entry[2] or self._binding(context) != entry[1]:
             return None
         return entry[0]
+
+    def resolve_observed(self, observation, *, trusted_account_id,
+                         trusted_steam_id, trusted_ownership):
+        """Select an existing live factory record; never enroll/authenticate.
+
+        Caller must obtain account/Steam/ownership from trusted server checks.
+        Observations are public, replayable and forgeable. Signature consume
+        still resolves the stored key and requires a fresh one-use challenge.
+        """
+        from public_observation import PublicObservation
+        if trusted_ownership is not True:
+            raise PermissionError('trusted ownership required before registry lookup')
+        if (type(trusted_account_id)is not bytes or len(trusted_account_id)!=16
+                or type(trusted_steam_id)is not int or not 0<=trusted_steam_id<2**64):
+            raise ValueError('trusted server account and Steam identity required')
+        if type(observation)is not PublicObservation:
+            raise ValueError('validated public observation required')
+        observation.validate()
+        with self._lock:
+            matches=[record for record,binding,revoked in self._cards.values()
+                     if not revoked and binding[:2]==(trusted_account_id,trusted_steam_id)
+                     and record.facts.header==observation.header
+                     and record.public_xy==observation.public_xy]
+            if len(matches)!=1:
+                raise PermissionError('no unique live factory registration for observed card/account')
+            return matches[0]
 
     def issue(self, store, context, *, trusted_ownership):
         with self._lock:
