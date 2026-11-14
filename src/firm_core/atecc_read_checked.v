@@ -16,7 +16,7 @@ module atecc_read_checked #(
   output wire [6:0] ext_address,ext_count,
   input wire ext_busy,ext_done,ext_valid,ext_cleanup,
   input wire [2:0] ext_error,input wire [7:0] ext_data);
-    reg child_start,kill_bus,bus_seen,checker_seen;
+    reg child_start,kill_bus,bus_seen,checker_seen,drain_error;
     reg [6:0] saved_count,saved_address,rx_index;
     wire bus_busy,bus_done,bus_valid,bus_cleanup,checker_busy,checker_done,checker_ok,checker_ready,checker_tentative;
     wire [2:0] bus_error,checker_error;
@@ -29,8 +29,11 @@ module atecc_read_checked #(
     endfunction
     reg [counter_width(TOTAL_TIMEOUT)-1:0] elapsed;
     wire invalid_context=(saved_count!=4 && saved_count!=35 && saved_count!=67) || rx_index>=saved_count;
-    wire active=busy && !abort && !kill_bus && !invalid_context && elapsed<TOTAL_TIMEOUT-1;
-    wire bridge_ready=active && checker_ready;
+    wire live=busy && !abort && !kill_bus && !invalid_context && elapsed<TOTAL_TIMEOUT-1;
+    wire active=live && !drain_error;
+    // A final-byte CRC error still owes the transport its ACK/STOP completion.
+    // Keep only the transport drain live; never expose tentative data or success.
+    wire bridge_ready=live && (drain_error || checker_ready);
     assign ready=!busy && !abort && !kill_bus && !child_start && !bus_busy && !checker_busy && !bus_done && !checker_done;
     assign tentative_valid=active && checker_tentative;
     assign ext_req=child_start;
@@ -70,14 +73,15 @@ module atecc_read_checked #(
     end
     always @(posedge clk or negedge rst_n) begin
         if(!rst_n) begin
-            child_start<=0;kill_bus<=0;bus_seen<=0;checker_seen<=0;
+            child_start<=0;kill_bus<=0;bus_seen<=0;checker_seen<=0;drain_error<=0;
             saved_count<=0;saved_address<=0;rx_index<=0;
             busy<=0;done<=0;packet_ok<=0;err<=0;detail_error<=0;retryable_nack<=0;
         end else begin
             child_start<=0;kill_bus<=0;done<=0;
             if(abort) begin
-                kill_bus<=1;done<=busy;busy<=0;packet_ok<=0;err<=3;detail_error<=0;retryable_nack<=0;
+                drain_error<=0;kill_bus<=1;done<=busy;busy<=0;packet_ok<=0;err<=3;detail_error<=0;retryable_nack<=0;
             end else if(!busy) begin
+                drain_error<=0;
 
                 if(req && ready) begin
                     packet_ok<=0;err<=0;detail_error<=0;rx_index<=0;retryable_nack<=0;
@@ -86,15 +90,24 @@ module atecc_read_checked #(
                     else begin busy<=1;child_start<=1;end
                 end
             end else if(invalid_context) begin
-                kill_bus<=1;done<=1;busy<=0;packet_ok<=0;err<=6;detail_error<=0;
+                drain_error<=0;kill_bus<=1;done<=1;busy<=0;packet_ok<=0;err<=6;detail_error<=0;
             end else if(elapsed>=TOTAL_TIMEOUT-1) begin
-                kill_bus<=1;done<=1;busy<=0;packet_ok<=0;err<=4;detail_error<=0;
+                drain_error<=0;kill_bus<=1;done<=1;busy<=0;packet_ok<=0;err<=4;detail_error<=0;
             end else if(bus_done && bus_error!=0) begin
-                kill_bus<=1;done<=1;busy<=0;packet_ok<=0;err<=1;detail_error<=bus_error;
+                drain_error<=0;kill_bus<=1;done<=1;busy<=0;packet_ok<=0;err<=1;detail_error<=bus_error;
                 // Address NACK means device-busy only if cleanup STOP really completed.
                 retryable_nack<=bus_error==1 && !bus_cleanup;
+            end else if(drain_error) begin
+                if(bus_seen || bus_done) begin
+                    drain_error<=0;kill_bus<=1;done<=1;busy<=0;packet_ok<=0;err<=2;
+                end
             end else if(checker_done && (checker_error!=0 || !checker_ok)) begin
-                kill_bus<=1;done<=1;busy<=0;packet_ok<=0;err<=2;detail_error<=checker_error;
+                packet_ok<=0;err<=2;detail_error<=checker_error;retryable_nack<=0;
+                if(rx_index==saved_count-1 && !(bus_seen || bus_done)) begin
+                    drain_error<=1;
+                end else begin
+                    kill_bus<=1;done<=1;busy<=0;
+                end
             end else begin
 
                 if(active && bus_valid && bridge_ready && rx_index<saved_count-1) rx_index<=rx_index+1'b1;
