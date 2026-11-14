@@ -4,6 +4,10 @@ on:
   push:
   workflow_dispatch:
 
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
 jobs:
   gds:
     runs-on: ubuntu-24.04
@@ -63,3 +67,27 @@ jobs:
       id-token: write
     steps:
       - uses: TinyTapeout/tt-gds-action/viewer@ttsky26d
+
+  numeric_sta:
+    needs: gds
+    runs-on: ubuntu-24.04
+    steps:
+      - uses: actions/checkout@v6
+      - uses: actions/download-artifact@v4
+        with:
+          name: signoff-evidence
+          path: signoff-evidence
+      - name: Validate numeric STA failure controls
+        run: python3 -B -m unittest discover -s tools -p 'test_check_sta_gate.py' -v
+      - name: Require all nine corners at 25ns without negative slack
+        run: >-
+          python3 -B tools/check_sta_gate.py
+          --summary signoff-evidence/summary.json
+          --expected-source-sha "$GITHUB_SHA"
+          --output signoff-evidence/numeric-sta-gate.json
+      - uses: actions/upload-artifact@v7
+        if: always()
+        with:
+          name: numeric-sta-gate
+          path: signoff-evidence/numeric-sta-gate.json
+          if-no-files-found: error
