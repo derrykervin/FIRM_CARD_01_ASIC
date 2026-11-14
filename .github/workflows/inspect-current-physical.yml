@@ -1,0 +1,51 @@
+name: inspect-current-physical
+on:
+  push:
+    paths: ['.github/workflows/inspect-current-physical.yml']
+  workflow_dispatch:
+permissions:
+  contents: read
+  actions: read
+jobs:
+  inspect-retained-reports:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v6
+      - uses: actions/download-artifact@v4
+        with:
+          name: GDS_logs
+          run-id: 43644311270
+          github-token: ${{ github.token }}
+          path: physical-logs
+      - name: Recover actual slow-corner critical paths
+        shell: python
+        run: |
+          import hashlib,json,re
+          from pathlib import Path
+          root=Path('physical-logs')
+          reports=[p for p in root.rglob('*.rpt') if 'max_ss_100C_1v60' in str(p)]
+          print('SLOW_CORNER_REPORTS',json.dumps([str(p)for p in reports]))
+          selected=[p for p in reports if p.name in ['sta.max.rpt','max.rpt']]
+          if not selected:selected=[p for p in reports if any(w in p.name for w in ['setup','timing'])]
+          assert selected, 'No complete slow-corner timing path report found'
+          cells=set();recovered=[]
+          for p in selected:
+            text=p.read_text(errors='replace');lines=text.splitlines()[:220]
+            print('REPORT_BEGIN',str(p));print('\n'.join(lines));print('REPORT_END')
+            cells.update(re.findall(r'(_\d+_)/','\n'.join(lines)))
+            recovered.append(dict(path=str(p),sha256=hashlib.sha256(p.read_bytes()).hexdigest(),first220=lines))
+          for p in root.rglob('*.v'):
+            if 'yosys-synthesis'not in str(p):continue
+            text=p.read_text(errors='replace');nets=set()
+            for match in re.finditer(r'(sky130_fd_sc_hd__\w+)\s+(_\d+_)\s*\((.*?)\);',text,re.S):
+              if match[2]in cells:
+                print('CRITICAL_CELL',str(p),match[0]);nets.update(re.findall(r'\.\w+\(([^()]+)\)',match[3]))
+            for line in text.splitlines():
+              if line.strip().startswith('assign ')and any(re.search(r'(?<!\w)'+re.escape(n)+r'(?!\w)',line)for n in nets):print('NET_ALIAS',line)
+          Path('critical-path-recovery.json').write_text(json.dumps(dict(source_sha='aeca0868c057a0664c62001c708adfae321bdb77',source_run=43644311270,reports=recovered),indent=2)+'\n')
+      - uses: actions/upload-artifact@v7
+        if: always()
+        with:
+          name: current-critical-path-recovery
+          path: critical-path-recovery.json

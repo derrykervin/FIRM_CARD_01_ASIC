@@ -54,8 +54,8 @@ module card_cpu(
     assign debug_r0 = regs[0];
 
     // I/O bus is combinational; peripherals sample io_we/io_re on clk edge.
-    assign io_re    = (!halted && opcode == OP_IN);
-    assign io_we    = (!halted && opcode == OP_OUT);
+    assign io_re    = (reset_n && !halted && opcode == OP_IN);
+    assign io_we    = (reset_n && !halted && opcode == OP_OUT);
     assign io_addr  = imm8;
     assign io_wdata = regs[rd];
 

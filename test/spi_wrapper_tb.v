@@ -19,16 +19,16 @@ module spi_wrapper_tb;
    ui_in[1]=level;
    write_reg(8'h21,8'hA5); write_reg(8'h20,1);
    if(uo_out[3]!==0) $fatal(1,"SPI CS not asserted");
-   wait(dut.u_card.spi_busy==0);
+   wait(dut.core.core.peripherals.spi_busy==0);
    @(negedge clk); addr=8'h21; #1;
-   if(dut.u_card.io_rdata!==expected) $fatal(1,"External MISO readback mismatch");
-   if(uio_oe!==0) $fatal(1,"Unexpected bidirectional driver");
+   if(dut.core.core.peripherals.io_rdata!==expected) $fatal(1,"External MISO readback mismatch");
+   if(uio_oe[7:2]!==6'h3f || uio_out[1:0]!==0) $fatal(1,"Unexpected bidirectional driver");
   end
  endtask
  initial begin
-  force dut.u_card.io_we=wr;
-  force dut.u_card.io_addr=addr;
-  force dut.u_card.io_wdata=value;
+  force dut.core.core.peripherals.io_we=wr;
+  force dut.core.core.peripherals.io_addr=addr;
+  force dut.core.core.peripherals.io_wdata=value;
   #1 rst_n=0;
   repeat(5) @(negedge clk); rst_n=1;
   transfer(1'b1,8'hFF); transfer(1'b0,8'h00); transfer(1'b1,8'hFF);
