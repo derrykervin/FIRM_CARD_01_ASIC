@@ -4,14 +4,7 @@ TOPLEVEL_LANG ?= verilog
 
 SRC_DIR = $(PWD)/../src
 
-PROJECT_SOURCES = \
-	project.v \
-	card.v \
-	card_cpu.v \
-	program_rom.v \
-	uart_tx.v \
-	uart_rx.v \
-	spi_master.v
+PROJECT_SOURCES := $(shell python3 project_sources.py)
 
 ifneq ($(GATES),yes)
 
