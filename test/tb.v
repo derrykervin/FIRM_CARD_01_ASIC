@@ -19,6 +19,16 @@ module tb();
     wire [7:0] uo_out;
     wire [7:0] uio_out;
     wire [7:0] uio_oe;
+    // External driver: 1 releases a line, 0 pulls it low. Actual TT pads resolve
+    // against DUT OE/data and pullups; this is a digital model, not electrical acceptance.
+    tri1 [7:0] uio_pads;
+    genvar pad;
+    generate for(pad=0;pad<8;pad=pad+1)begin: pad_resolution
+        assign uio_pads[pad]=uio_oe[pad] ? uio_out[pad] : 1'bz;
+        assign uio_pads[pad]=uio_in[pad] ? 1'bz : 1'b0;
+    end endgenerate
+    wire scl_line=uio_pads[1];
+    wire sda_line=uio_pads[0];
 
     // Scalar alias for UART TX.
     // This avoids an Icarus VPI limitation on callbacks to uo_out[0].
@@ -40,7 +50,7 @@ module tb();
         .ui_in(ui_in),
         .uo_out(uo_out),
 
-        .uio_in(uio_in),
+        .uio_in(uio_pads),
         .uio_out(uio_out),
         .uio_oe(uio_oe),
 
