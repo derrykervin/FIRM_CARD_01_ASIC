@@ -1,0 +1,112 @@
+{
+  "project": "FIRM_READER_01",
+  "source_sha": "bae4732e6c889a0c95f3634a91f820e882fec513",
+  "checks": {
+    "rtl_freeze": {
+      "result": "PASS",
+      "source_sha": "bae4732e6c889a0c95f3634a91f820e882fec513",
+      "evidence_url": "https://github.com/derrykervin/FIRM_READER_01_ASIC/commit/bae4732e6c889a0c95f3634a91f820e882fec513",
+      "scope": "Immutable candidate snapshot only; not approval to merge/release/fabricate"
+    },
+    "functional": {
+      "result": "PASS",
+      "source_sha": "bae4732e6c889a0c95f3634a91f820e882fec513",
+      "evidence_url": "https://github.com/derrykervin/FIRM_READER_01_ASIC/actions/runs/43714839908",
+      "scope": "Exact candidate RTL fixture regression; not production security acceptance"
+    },
+    "joint": {
+      "result": "PASS",
+      "source_sha": "bae4732e6c889a0c95f3634a91f820e882fec513",
+      "evidence_url": "https://github.com/derrykervin/FIRM_READER_01_ASIC/actions/runs/43714839907",
+      "scope": "Current CARD4ea/Readerbae pair CPB16/347 plus retained legacy/fault/async"
+    },
+    "coverage": {
+      "result": "PARTIAL",
+      "source_sha": "bae4732e6c889a0c95f3634a91f820e882fec513",
+      "evidence_url": "https://github.com/derrykervin/FIRM_READER_01_ASIC/tree/bae4732e6c889a0c95f3634a91f820e882fec513/test",
+      "scope": "Controlled scenarios/mutants are qualified; current-source complete statement coverage is not established; older CVC coverage control failed. No 100% claim"
+    },
+    "lint": {
+      "result": "PASS",
+      "source_sha": "bae4732e6c889a0c95f3634a91f820e882fec513",
+      "evidence_url": "https://github.com/derrykervin/FIRM_READER_01_ASIC/actions/runs/43714839904/job/132814064497",
+      "scope": "Mandatory current GDS build checks"
+    },
+    "synthesis": {
+      "result": "PASS",
+      "source_sha": "bae4732e6c889a0c95f3634a91f820e882fec513",
+      "evidence_url": "https://github.com/derrykervin/FIRM_READER_01_ASIC/actions/runs/43714839904/job/132814064497",
+      "scope": "Current GDS flow synthesis"
+    },
+    "sta_40mhz": {
+      "result": "PASS",
+      "source_sha": "bae4732e6c889a0c95f3634a91f820e882fec513",
+      "evidence_url": "https://github.com/derrykervin/FIRM_READER_01_ASIC/actions/runs/43714839904/job/132818608150",
+      "scope": "Nine-corner numeric gate,39 content hashes independently checked; not complete constraint proof"
+    },
+    "pnr": {
+      "result": "PASS",
+      "source_sha": "bae4732e6c889a0c95f3634a91f820e882fec513",
+      "evidence_url": "https://github.com/derrykervin/FIRM_READER_01_ASIC/actions/runs/43714839904/job/132814064497",
+      "scope": "Current GDS placement/routing successful"
+    },
+    "drc": {
+      "result": "PASS",
+      "source_sha": "bae4732e6c889a0c95f3634a91f820e882fec513",
+      "evidence_url": "https://github.com/derrykervin/FIRM_READER_01_ASIC/actions/runs/43714839904/job/132814064497",
+      "scope": "Routing and Magic DRC clear in source-pinned log"
+    },
+    "lvs": {
+      "result": "PASS",
+      "source_sha": "bae4732e6c889a0c95f3634a91f820e882fec513",
+      "evidence_url": "https://github.com/derrykervin/FIRM_READER_01_ASIC/actions/runs/43714839904/job/132814064497",
+      "scope": "Circuits match uniquely and LVS errors clear in source-pinned log"
+    },
+    "precheck": {
+      "result": "PASS",
+      "source_sha": "bae4732e6c889a0c95f3634a91f820e882fec513",
+      "evidence_url": "https://github.com/derrykervin/FIRM_READER_01_ASIC/actions/runs/43714839904/job/132818608197",
+      "scope": "Official current Precheck job"
+    },
+    "gate_level": {
+      "result": "PASS",
+      "source_sha": "bae4732e6c889a0c95f3634a91f820e882fec513",
+      "evidence_url": "https://github.com/derrykervin/FIRM_READER_01_ASIC/actions/runs/43714839904/job/132818608219",
+      "scope": "Exact candidate gate-netlist functional regression"
+    },
+    "docs": {
+      "result": "PASS",
+      "source_sha": "bae4732e6c889a0c95f3634a91f820e882fec513",
+      "evidence_url": "https://github.com/derrykervin/FIRM_READER_01_ASIC/actions/runs/43714839891",
+      "scope": "Current docs CI"
+    },
+    "required_ci": {
+      "result": "FAIL",
+      "source_sha": "bae4732e6c889a0c95f3634a91f820e882fec513",
+      "evidence_url": "https://github.com/derrykervin/FIRM_READER_01_ASIC/actions/runs/43714839904",
+      "scope": "All existing required checks retained, including Viewer; no disabled check or substituted old-source success"
+    }
+  },
+  "artifacts": [
+    {
+      "kind": "GDS",
+      "path": "tt_um_derrykervin_firm_reader_01.gds",
+      "bytes": 28773720,
+      "sha256": "8255ee19bbc9610b833c662bf78bc5f263065cd99baddd14ae9add9589111f9c",
+      "source_sha": "bae4732e6c889a0c95f3634a91f820e882fec513"
+    },
+    {
+      "kind": "OAS",
+      "path": "tt_um_derrykervin_firm_reader_01.oas",
+      "bytes": 1453324,
+      "sha256": "a1c9b00c125e42d9821e32211172c27a5010453925e0cf7f392034bdc8619193",
+      "source_sha": "bae4732e6c889a0c95f3634a91f820e882fec513"
+    }
+  ],
+  "artifact_scope": "Collector-reported hashes only; GDS/OAS binaries not independently verified",
+  "official_submission": null,
+  "physical_tests": "DEFERRED_BY_USER_NO_TEST_CAPABILITY",
+  "product_security_status": "NOT_ASSESSED",
+  "production_security": "Real device/factory binding/interactive production service acceptance remains incomplete",
+  "official_scope": "No formal Project/Revision/inclusion/allocation/payment verified; artifact named tt_submission is not official submission"
+}
