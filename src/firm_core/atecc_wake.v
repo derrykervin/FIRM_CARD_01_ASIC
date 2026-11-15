@@ -33,6 +33,10 @@ module atecc_wake #(
     reg [width_for(TOTAL_TIMEOUT-1)-1:0] elapsed;
     reg [width_for(MAX_READ_ATTEMPTS)-1:0] attempts;
     reg [2:0] state,received;
+    // Single registered phase grants isolate asynchronous child resets and
+    // physical pins from binary counter/context comparator hazards.
+    (* keep=1 *) reg pulse_grant;
+    (* keep=1 *) reg read_grant;
     // Exact suffix matcher for both four-byte tokens; no checksum collisions.
     // Keeping a four-byte shift bank is unnecessary for these two comparisons.
     (* fsm_encoding="none" *) reg [2:0] response_pattern;
@@ -67,11 +71,12 @@ module atecc_wake #(
     wire invalid_context=state==IDLE || state>POLL || received>4 ||
         (state==PULSE && phase_count>=WAKE_LOW_CYCLES) ||
         (state==DELAY && phase_count>=WAKE_HIGH_CYCLES) ||
-        (state==POLL && phase_count>=POLL_CYCLES);
+        (state==POLL && phase_count>=POLL_CYCLES) ||
+        pulse_grant!=(state==PULSE) || read_grant!=(state==READ);
     wire active=busy && !abort && !expired && !invalid_context;
-    wire read_active=active && state==READ;
+    wire read_active=busy && read_grant;
     assign scl_low=read_active && bus_scl_low;
-    assign sda_low=active && ((state==PULSE) || (state==READ && bus_sda_low));
+    assign sda_low=(busy && pulse_grant) || (read_active && bus_sda_low);
     wire [2:0] pattern_next=bus_valid ? next_wake_pattern(response_pattern,bus_data):response_pattern;
     wire [2:0] count_next=received+(bus_valid ? 3'd1:3'd0);
     assign ext_req=bus_req;
@@ -113,38 +118,44 @@ module atecc_wake #(
         if(!rst_n) begin
             state<=IDLE;phase_count<=0;attempts<=0;received<=0;response_pattern<=0;
             saved_address<=0;bus_req<=0;busy<=0;done<=0;wake_ok<=0;err<=0;detail_error<=0;settle_count<=0;
+            pulse_grant<=0;read_grant<=0;
         end else begin
             done<=0;bus_req<=0;
             if(abort) begin
+                pulse_grant<=0;read_grant<=0;
                 done<=busy;busy<=0;wake_ok<=0;err<=1;detail_error<=0;state<=IDLE;
             end else if(!busy) begin
+                pulse_grant<=0;read_grant<=0;
                 if(req) begin
                     state<=WAIT_IDLE;phase_count<=0;attempts<=0;received<=0;response_pattern<=0;
                     saved_address<=address;busy<=1;wake_ok<=0;err<=0;detail_error<=0;settle_count<=0;
                 end
             end else if(invalid_context) begin
+                pulse_grant<=0;read_grant<=0;
                 busy<=0;done<=1;wake_ok<=0;err<=6;state<=IDLE;
             end else if(expired) begin
+                pulse_grant<=0;read_grant<=0;
                 busy<=0;done<=1;wake_ok<=0;err<=2;state<=IDLE;
             end else begin
 
                 case(state)
                     WAIT_IDLE: begin
                         if(settle_count<3) settle_count<=settle_count+1'b1;
-                        if(settle_count==3 && sample_valid[1] && scl_sync && sda_sync) begin state<=PULSE;phase_count<=0;end
+                        if(settle_count==3 && sample_valid[1] && scl_sync && sda_sync) begin state<=PULSE;phase_count<=0;pulse_grant<=1;end
                     end
-                    PULSE: if(phase_count==WAKE_LOW_CYCLES-1) begin state<=DELAY;phase_count<=0;end
+                    PULSE: if(phase_count==WAKE_LOW_CYCLES-1) begin state<=DELAY;phase_count<=0;pulse_grant<=0;end
                            else phase_count<=phase_count+1'b1;
                     DELAY,POLL: begin
                         if(!sample_valid[1] || !scl_sync || !sda_sync) phase_count<=0;
                         else if(phase_count==((state==DELAY)?WAKE_HIGH_CYCLES-1:POLL_CYCLES-1)) begin
                             state<=READ;phase_count<=0;received<=0;response_pattern<=0;
-                            attempts<=attempts+1'b1;bus_req<=1;
+                            attempts<=attempts+1'b1;bus_req<=1;read_grant<=1;
                         end else phase_count<=phase_count+1'b1;
                     end
                     READ: begin
                         if(bus_valid) begin received<=count_next;response_pattern<=pattern_next;end
                         if(bus_done) begin
+                            read_grant<=0;
                             if(bus_err==1 && !bus_cleanup && attempts<MAX_READ_ATTEMPTS) begin
                                 state<=POLL;phase_count<=0;received<=0;response_pattern<=0;
                             end else begin
