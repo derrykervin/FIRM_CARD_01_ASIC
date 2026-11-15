@@ -1,7 +1,7 @@
 name: inspect-gl-waveform
 on:
   push:
-    paths: ['tools/inspect_gl_waveform.py', '.github/workflows/inspect-gl-waveform.yml']
+    paths: ['tools/inspect_gl_waveform.py', 'tools/fst_selected.c', '.github/workflows/inspect-gl-waveform.yml']
   workflow_dispatch:
 permissions:
   contents: read
@@ -12,6 +12,12 @@ jobs:
     timeout-minutes: 15
     steps:
       - uses: actions/checkout@v6
+      - uses: actions/checkout@v6
+        with:
+          repository: cambridgehackers/open-src-cvc
+          ref: 1c5e043ec33ef6f1fdbf38565501c944893a83cf
+          path: .reference/cvc
+          persist-credentials: false
       - uses: actions/download-artifact@v4
         with:
           name: gatelevel_test_results
@@ -20,8 +26,8 @@ jobs:
           path: gl-evidence
       - name: Decode retained failed GL wire activity
         run: |
-          sudo apt-get update && sudo apt-get install -y gtkwave
-          python3 -B tools/inspect_gl_waveform.py --root gl-evidence --output gl-wire-review.json
+          gcc -std=gnu99 -O2 -I.reference/cvc/src tools/fst_selected.c .reference/cvc/src/fstapi.c .reference/cvc/src/fastlz.c .reference/cvc/src/lz4.c -lz -lm -pthread -o fst_selected
+          python3 -B tools/inspect_gl_waveform.py --root gl-evidence --output gl-wire-review.json --converter ./fst_selected
       - uses: actions/upload-artifact@v7
         if: always()
         with:
