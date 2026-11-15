@@ -1,0 +1,32 @@
+name: grant-regression
+on:
+  push:
+  pull_request:
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  fault-recovery:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 30
+    steps:
+      - uses: actions/checkout@v6
+      - uses: actions/setup-python@v6
+        with:
+          python-version: '3.11'
+      - name: Install independent simulator and fixture dependencies
+        run: |
+          sudo apt-get update && sudo apt-get install -y iverilog
+          python3 -m pip install -r FIRM-SYSTEM-SPECS/requirements-reference.txt
+      - name: Six grant faults, recovery and three disabled-guard controls
+        run: python3 -B experimental/gl_reset/check_grants.py --out reports/grants
+      - name: Retain complete31-case TT protocol regression
+        run: python3 -B experimental/tt_entry/check.py --output reports/tt31
+      - name: GL aggregation failure controls and original-operation plan
+        run: python3 -B test/check_gl_profiles.py > reports/gl-aggregation-controls.json
+      - uses: actions/upload-artifact@v7
+        if: always()
+        with:
+          name: grant-regression-evidence
+          path: reports/
+          if-no-files-found: error
