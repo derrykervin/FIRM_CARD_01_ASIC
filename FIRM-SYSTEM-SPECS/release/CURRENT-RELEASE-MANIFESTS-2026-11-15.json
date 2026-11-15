@@ -1,0 +1,197 @@
+{
+  "updated_utc": "2026-11-15T15:33:06Z",
+  "status": "INCOMPLETE_NOT_SUBMITTED",
+  "CARD": {
+    "source_sha": "4ea89ba3d056db4405229a95074044f11587c652",
+    "PR": "https://github.com/derrykervin/FIRM_CARD_01_ASIC/pull/16",
+    "GL": "IN_PROGRESS",
+    "remaining_gate_failures": [
+      "coverage: missing or not PASS",
+      "gate_level: missing or not PASS",
+      "required_ci: missing or not PASS"
+    ]
+  },
+  "Reader": {
+    "source_sha": "bae4732e6c889a0c95f3634a91f820e882fec513",
+    "PR": "https://github.com/derrykervin/FIRM_READER_01_ASIC/pull/6",
+    "GL": "SUCCESS_SOURCE_AND_TEST_SUMMARY_VERIFIED",
+    "GL_job": 132818608219,
+    "GL_result": "TESTS=1 PASS=1 FAIL=0 SKIP=0",
+    "simulation_ns": 149590350,
+    "wall_seconds": 7594.21,
+    "GL_artifact": {
+      "id": 14167445695,
+      "name": "gatelevel_test_results",
+      "size_in_bytes": 7766743,
+      "url": "https://api.github.com/repos/derrykervin/FIRM_READER_01_ASIC/actions/artifacts/14167445695",
+      "archive_download_url": "https://api.github.com/repos/derrykervin/FIRM_READER_01_ASIC/actions/artifacts/14167445695/zip",
+      "expired": false,
+      "created_at": "2026-11-15T15:03:35Z",
+      "expires_at": "2027-02-13T12:38:00Z",
+      "updated_at": "2026-11-15T15:03:35Z",
+      "digest": "sha256:4bd5b2b868dce8a2097aee018c13230e30fef5dc7e804da9ce3782f35f35e83d",
+      "workflow_run": {
+        "id": 43714839904,
+        "repository_id": 1431123582,
+        "head_repository_id": 1431123582,
+        "head_branch": "engineering/reader-metadata-sta-20261115",
+        "head_sha": "bae4732e6c889a0c95f3634a91f820e882fec513"
+      }
+    },
+    "remaining_gate_failures": [
+      "coverage: missing or not PASS",
+      "required_ci: missing or not PASS"
+    ],
+    "Pages": "FAIL_404_CONFIGURATION"
+  },
+  "release_policy": "Existing REQUIRED checks unchanged. Coverage remains PARTIAL; no 100% statement coverage claim; current source top-level gate refreshed without converting skipped/deferred checks to PASS. Snapshot pin is not release approval.",
+  "physical": "DEFERRED_BY_USER_NO_TEST_CAPABILITY",
+  "platform": "No authenticated TT/admin browser capability in current environment; Pages admin setting remains external action",
+  "main": {
+    "CARD": "feaa55682afc13b8ef6917de1e913a06ffae8ec0",
+    "Reader": "2e3a9cfb41424848e4da2e448f9378eef273d1d8"
+  },
+  "C0": "UNCHANGED_a6b79b461ca6d7393cf94d1c49c2527a2b5b13cd",
+  "official_public": {
+    "head": "4c9b706534dbe24aa3b4ec8ee0d6b3ac17df624b",
+    "truncated": false,
+    "hits": [
+      {
+        "path": "projects/tt_um_derrykervin_cardmcu_c0",
+        "mode": "040000",
+        "type": "tree",
+        "sha": "6d4996c9e83a9214d1cbdc54a63ac5ecf46ad20c",
+        "url": "https://api.github.com/repos/TinyTapeout/tinytapeout-sky-26d/git/trees/6d4996c9e83a9214d1cbdc54a63ac5ecf46ad20c"
+      },
+      {
+        "path": "projects/tt_um_derrykervin_cardmcu_c0/LICENSE",
+        "mode": "100644",
+        "type": "blob",
+        "sha": "261eeb9e9f8b2b4b0d119366dda99c6fd7d35c64",
+        "size": 11357,
+        "url": "https://api.github.com/repos/TinyTapeout/tinytapeout-sky-26d/git/blobs/261eeb9e9f8b2b4b0d119366dda99c6fd7d35c64"
+      },
+      {
+        "path": "projects/tt_um_derrykervin_cardmcu_c0/commit_id.json",
+        "mode": "100644",
+        "type": "blob",
+        "sha": "7c1ef3255adaadfe562b00abad5d00a99ebf0942",
+        "size": 294,
+        "url": "https://api.github.com/repos/TinyTapeout/tinytapeout-sky-26d/git/blobs/7c1ef3255adaadfe562b00abad5d00a99ebf0942"
+      },
+      {
+        "path": "projects/tt_um_derrykervin_cardmcu_c0/docs",
+        "mode": "040000",
+        "type": "tree",
+        "sha": "fa334d49a05ab805707cf59302773ca5163cb23b",
+        "url": "https://api.github.com/repos/TinyTapeout/tinytapeout-sky-26d/git/trees/fa334d49a05ab805707cf59302773ca5163cb23b"
+      },
+      {
+        "path": "projects/tt_um_derrykervin_cardmcu_c0/docs/info.md",
+        "mode": "100644",
+        "type": "blob",
+        "sha": "04a8d82d091ee1a99923b683d51bf52f56a53b95",
+        "size": 1433,
+        "url": "https://api.github.com/repos/TinyTapeout/tinytapeout-sky-26d/git/blobs/04a8d82d091ee1a99923b683d51bf52f56a53b95"
+      },
+      {
+        "path": "projects/tt_um_derrykervin_cardmcu_c0/info.yaml",
+        "mode": "100644",
+        "type": "blob",
+        "sha": "9fb8929e5e27948f7ca8751439d21768eede7600",
+        "size": 1127,
+        "url": "https://api.github.com/repos/TinyTapeout/tinytapeout-sky-26d/git/blobs/9fb8929e5e27948f7ca8751439d21768eede7600"
+      },
+      {
+        "path": "projects/tt_um_derrykervin_cardmcu_c0/pdk.json",
+        "mode": "100644",
+        "type": "blob",
+        "sha": "7b50bacefeade88131da06260d934cecaf6cd4c8",
+        "size": 168,
+        "url": "https://api.github.com/repos/TinyTapeout/tinytapeout-sky-26d/git/blobs/7b50bacefeade88131da06260d934cecaf6cd4c8"
+      },
+      {
+        "path": "projects/tt_um_derrykervin_cardmcu_c0/stats",
+        "mode": "040000",
+        "type": "tree",
+        "sha": "2a3fa59246a090ef7a457a751fc2dab8be864a9c",
+        "url": "https://api.github.com/repos/TinyTapeout/tinytapeout-sky-26d/git/trees/2a3fa59246a090ef7a457a751fc2dab8be864a9c"
+      },
+      {
+        "path": "projects/tt_um_derrykervin_cardmcu_c0/stats/metrics.csv",
+        "mode": "100644",
+        "type": "blob",
+        "sha": "7d09ffd6675f7f85278560411811d136c3b6339c",
+        "size": 15438,
+        "url": "https://api.github.com/repos/TinyTapeout/tinytapeout-sky-26d/git/blobs/7d09ffd6675f7f85278560411811d136c3b6339c"
+      },
+      {
+        "path": "projects/tt_um_derrykervin_cardmcu_c0/stats/synthesis-stats.txt",
+        "mode": "100644",
+        "type": "blob",
+        "sha": "17592982e4482156a9f9aa2af7e2700cc3706188",
+        "size": 3130,
+        "url": "https://api.github.com/repos/TinyTapeout/tinytapeout-sky-26d/git/blobs/17592982e4482156a9f9aa2af7e2700cc3706188"
+      },
+      {
+        "path": "projects/tt_um_derrykervin_cardmcu_c0/tt_um_derrykervin_cardmcu_c0.lef",
+        "mode": "100644",
+        "type": "blob",
+        "sha": "de4cff7826bc64e07b7da15094d25fed215f6ab1",
+        "size": 11267,
+        "url": "https://api.github.com/repos/TinyTapeout/tinytapeout-sky-26d/git/blobs/de4cff7826bc64e07b7da15094d25fed215f6ab1"
+      },
+      {
+        "path": "projects/tt_um_derrykervin_cardmcu_c0/tt_um_derrykervin_cardmcu_c0.oas",
+        "mode": "100644",
+        "type": "blob",
+        "sha": "3148c607c0eb456bd09cf8497fe633a48ab2f97c",
+        "size": 128267,
+        "url": "https://api.github.com/repos/TinyTapeout/tinytapeout-sky-26d/git/blobs/3148c607c0eb456bd09cf8497fe633a48ab2f97c"
+      },
+      {
+        "path": "projects/tt_um_derrykervin_cardmcu_c0/tt_um_derrykervin_cardmcu_c0.v",
+        "mode": "100644",
+        "type": "blob",
+        "sha": "d32f46b8911adef1eec4c06b1961eeb0f7cc23ca",
+        "size": 322070,
+        "url": "https://api.github.com/repos/TinyTapeout/tinytapeout-sky-26d/git/blobs/d32f46b8911adef1eec4c06b1961eeb0f7cc23ca"
+      }
+    ]
+  },
+  "security": "Real secure-device/factory binding/production server acceptance incomplete; digital fixtures are not product authentication acceptance",
+  "evidence": {
+    "reader-bae-gl-success.log": {
+      "bytes": 88790,
+      "sha256": "f3688ce1c41710e929f23062a1e72cd86a87abfd1d4e8755834075dfeb0b4253"
+    },
+    "card-release-manifest.json": {
+      "bytes": 5429,
+      "sha256": "c4f9af24a9ef3be3d6a0ba40b262baafb4f6e492a1aa4ccf58e7da74e28db3d9"
+    },
+    "reader-release-manifest.json": {
+      "bytes": 5455,
+      "sha256": "688aaaf9b63e1ab510341163fe365117314d2f7bbab1cc7e622d01f832ececc9"
+    },
+    "card-cli-check.json": {
+      "bytes": 399,
+      "sha256": "7babf23ac33e8ff22cf9159d966a498edc4f6c73223622ce9d4fe7257d7d51ab"
+    },
+    "reader-cli-check.json": {
+      "bytes": 362,
+      "sha256": "b8d1e2815b58d49e96355f9b4c37ed6e89738db176295d074919f5c117b82de2"
+    },
+    "release-policy-review.json": {
+      "bytes": 1144,
+      "sha256": "6fba5d20aaa6c194a271924d7e012463c89b94fb629f6d4b568bc1a1c988f05d"
+    },
+    "build_current_release_manifests.py": {
+      "bytes": 5952,
+      "sha256": "fd9c5d844558a5bd934a1d9d92fba06b53b06a2dfc52f185319990b5fbba4f26"
+    },
+    "live-sources.json": {
+      "bytes": 73566,
+      "sha256": "cb1eedd33e0da8ff0fe9d89a757199de84995535aa083c65a05bb92a4ee1e4c4"
+    }
+  }
+}
