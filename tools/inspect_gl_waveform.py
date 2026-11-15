@@ -21,6 +21,7 @@ scope=[];ids={};wanted={'scl_line','sda_line','uart_tx','uio_in','uio_oe','uo_ou
 values={};pending={};time=0;in_header=True;timescale='';reading_scale=False
 uart=[];uart_errors=[];uart_bits=None;next_sample=None;bit_ticks=None
 transactions=[];active=None;bits=[];scale=None
+probe_map={};internal_changes=[]
 
 def flush(t):
  global active,bits,uart_bits,next_sample
@@ -33,6 +34,8 @@ def flush(t):
    uart.append(sum(v<<i for i,v in enumerate(uart_bits))if all(v in [0,1]for v in uart_bits)else None)
    next_sample=None;uart_bits=None
  values.update(pending);pending.clear()
+ changes={probe_map.get(n,n):v for n,v in values.items()if n.startswith('probe')and old.get(n)!=v}
+ if changes:internal_changes.append(dict(time=t,changes=changes))
  scl=values.get('scl_line');sda=values.get('sda_line')
  if old.get('scl_line')==scl==1 and old.get('sda_line')==1 and sda==0:
   if active is not None:transactions.append(dict(start=active,stop=None,bits=len(bits),repeated_start=True))
@@ -57,12 +60,14 @@ for raw in process.stdout:
    timescale+=' '+line
    if '$end'in line and '$timescale'not in line:reading_scale=False
   if line.startswith('$scope '):scope.append(line.split()[2])
+  elif line.startswith('$comment PROBE '):
+   row=line.split();probe_map[row[2]]=' '.join(row[3:-1])
   elif line.startswith('$upscope'):scope.pop()
   elif line.startswith('$var '):
    row=line.split();name=row[4]
-   if scope==['tb']and name in wanted:ids.setdefault(row[3],[]).append(name)
+   if scope==['tb']and(name in wanted or name.startswith('probe')):ids.setdefault(row[3],[]).append(name)
   elif line.startswith('$enddefinitions'):
-   assert set(n for names in ids.values()for n in names)==wanted,ids
+   assert wanted.issubset(set(n for names in ids.values()for n in names)),ids
    m=re.search(r'(\d+)\s*(fs|ps|ns|us|ms|s)\b',timescale);assert m,timescale
    scale={'fs':1e6,'ps':1e3,'ns':1,'us':1e-3,'ms':1e-6,'s':1e-9}[m[2]]/int(m[1]);bit_ticks=int(347*25*scale);in_header=False
   continue
@@ -83,8 +88,11 @@ assert process.wait()==0
 result=dict(source_sha='4de357eb078df3221dbce9ed9fba20993ed0fb67',source_run=43649550562,
  fst_sha256=hashlib.sha256(fst.read_bytes()).hexdigest(),timescale=timescale,
  end_time=time,final=values,uart=uart,uart_hex=' '.join('??'if v is None else f'{v:02x}'for v in uart),
- uart_stop_errors=uart_errors,i2c=transactions,unfinished_i2c=dict(start=active,bits=bits),scope=__doc__)
+ uart_stop_errors=uart_errors,i2c=transactions,unfinished_i2c=dict(start=active,bits=bits),
+ internal_changes=internal_changes,probe_map=probe_map,scope=__doc__)
 a.output.write_text(json.dumps(result,indent=2)+'\n')
 print('GL_UART',result['uart_hex']);print('GL_FINAL',json.dumps(values));print('GL_UART_STOP_ERRORS',json.dumps(uart_errors))
 for row in transactions:print('GL_I2C',json.dumps(row))
 print('GL_UNFINISHED',json.dumps(result['unfinished_i2c']))
+print('GL_PROBE_MAP',json.dumps(probe_map))
+for row in internal_changes:print('GL_INTERNAL',json.dumps(row))
