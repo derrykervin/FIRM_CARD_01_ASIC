@@ -139,13 +139,17 @@ module atecc_proof_session #(
         end
     end endgenerate
     reg wake_req,command_req,kill,result_ok;
+    (* keep=1 *) reg wake_grant;
+    (* keep=1 *) reg command_grant;
     wire invalid_context=busy && (state==IDLE || state>IDENTITY_STREAM || step>12 ||
         (state==IDENTITY_STREAM ? (!identity_mode || step!=4 || completed_steps!=13'h001f) : completed_steps!=preceding_steps) ||
-        payload_count>payload_length || signature_count>output_length || timer_fault);
+        payload_count>payload_length || signature_count>output_length || timer_fault ||
+        wake_grant!=(state==WAKE_START || state==WAKE_WAIT) ||
+        command_grant!=(state==COMMAND_START || state==COMMAND_WAIT));
     wire expired=busy && elapsed>=TOTAL_TIMEOUT-1;
     wire active=busy && card_present && !abort && !kill && !expired && !invalid_context;
-    wire wake_enabled=active && (state==WAKE_START || state==WAKE_WAIT);
-    wire command_enabled=active && (state==COMMAND_START || state==COMMAND_WAIT);
+    wire wake_enabled=busy && wake_grant && card_present;
+    wire command_enabled=busy && command_grant && card_present;
     wire wake_done,wake_ok,wake_scl,wake_sda;
     wire [2:0] wake_err,wake_detail;
     wire command_ready,command_done,command_ok,command_valid,command_scl,command_sda;
@@ -216,22 +220,27 @@ module atecc_proof_session #(
         if(!rst_n) begin
             state<=IDLE;identity_mode<=0;step<=0;completed_steps<=0;payload_count<=0;facts_bad<=0;serial_zero<=1;serial_ff<=1;digest_valid<=0;saved_address<=0;signature_count<=0;
             wake_req<=0;command_req<=0;kill<=0;result_ok<=0;busy<=0;done<=0;
+            wake_grant<=0;command_grant<=0;
             err<=0;child_error<=0;detail_error<=0;transport_detail<=0;
         end else begin
             done<=0;wake_req<=0;command_req<=0;kill<=0;
             if(abort || !card_present) begin
+                wake_grant<=0;command_grant<=0;
                 state<=IDLE;busy<=0;done<=busy;result_ok<=0;digest_valid<=0;kill<=1;
                 err<=abort?1:2;child_error<=0;detail_error<=0;transport_detail<=0;
             end else if(!busy) begin
+                wake_grant<=0;command_grant<=0;
                 if(req && ready) begin
                     saved_address<=address;identity_mode<=want_identity;digest_valid<=!want_identity;signature_count<=0;step<=0;completed_steps<=0;payload_count<=0;facts_bad<=0;serial_zero<=1;serial_ff<=1;
                     result_ok<=0;err<=0;child_error<=0;detail_error<=0;transport_detail<=0;
                     if(KEY_SLOT!=2 || address!=7'h60) begin done<=1;err<=6;digest_valid<=0;end
-                    else begin state<=WAKE_START;busy<=1;end
+                    else begin state<=WAKE_START;busy<=1;wake_grant<=1;end
                 end
             end else if(invalid_context || timer_fault_observed) begin
+                wake_grant<=0;command_grant<=0;
                 state<=IDLE;busy<=0;done<=1;result_ok<=0;digest_valid<=0;err<=6;kill<=1;
             end else if(expired) begin
+                wake_grant<=0;command_grant<=0;
                 state<=IDLE;busy<=0;done<=1;result_ok<=0;digest_valid<=0;err<=5;kill<=1;
             end else begin
 
@@ -247,21 +256,26 @@ module atecc_proof_session #(
                 case(state)
                     WAKE_START: begin wake_req<=1;state<=WAKE_WAIT;end
                     WAKE_WAIT: if(wake_done) begin
+                        wake_grant<=0;
                         if(wake_err!=0 || !wake_ok) begin
                             state<=IDLE;busy<=0;done<=1;result_ok<=0;digest_valid<=0;kill<=1;
                             err<=3;child_error<=wake_err;detail_error<=wake_detail;
-                        end else state<=COMMAND_START;
+                        end else begin state<=COMMAND_START;command_grant<=1;end
                     end
                     COMMAND_START: if(command_ready && !command_done) begin command_req<=1;payload_count<=0;facts_bad<=0;state<=COMMAND_WAIT;end
                     COMMAND_WAIT: if(command_done) begin
                         if(command_err!=0 || !command_ok) begin
+                            command_grant<=0;
                             state<=IDLE;busy<=0;done<=1;result_ok<=0;digest_valid<=0;kill<=1;err<=4;
                             child_error<=command_err;detail_error<=command_detail;transport_detail<=command_transport;
                         end else if(payload_count!=payload_length || facts_bad || (step==0 && (serial_zero || serial_ff))) begin
+                            command_grant<=0;
                             state<=IDLE;busy<=0;done<=1;result_ok<=0;digest_valid<=0;kill<=1;err<=7;
                         end else if(identity_mode && step==4) begin
+                            command_grant<=0;
                             completed_steps<=13'h001f;state<=IDENTITY_STREAM;
                         end else if(step==12) begin
+                            command_grant<=0;
                             state<=IDLE;busy<=0;done<=1;digest_valid<=0;kill<=1;
                             if(signature_count==64 && completed_steps==13'h0fff) begin result_ok<=1;err<=0;end
                             else begin result_ok<=0;err<=7;end

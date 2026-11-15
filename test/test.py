@@ -5,6 +5,7 @@ protocol fixture. This entry requires A1+32 digest bytes, 13 checked device comm
 provisional D0 bytes and a final F0 status. SDK M0 worst-wait models are separate.
 """
 import json
+import os
 from pathlib import Path
 import cocotb
 from cocotb.clock import Clock
@@ -117,12 +118,14 @@ async def collect(dut):
             return bytes(data),status,error,count
 
 async def transaction(dut,context,late_mismatch=False,identity=False,crc_bad=False):
+    dut._log.info('Start context=%s identity=%s crc_bad=%s late_mismatch=%s',context,identity,crc_bad,late_mismatch)
     slave=cocotb.start_soon(device(dut,context,late_mismatch,identity,crc_bad))
     received=cocotb.start_soon(collect(dut))
     await uart_send(dut,0xa0 if identity else 0xa1)
     if not identity:
         for value in bytes.fromhex(FIXTURE['digests'][context]):await uart_send(dut,value)
     data,status,error,count=await with_timeout(received,250,timeout_unit='ms')
+    dut._log.info('Wire terminal status=%02x error=%02x count=%d provisional=%d',status,error,count,len(data))
     await with_timeout(slave,1,timeout_unit='ms')
     expected=(bytes.fromhex(FIXTURE['responses'][context*13])[1:21]+bytes.fromhex(FIXTURE['responses'][context*13+4])[1:-2]) if identity else bytes.fromhex(FIXTURE['responses'][context*13+7])[1:-2]
     if crc_bad:expected=b''
@@ -136,16 +139,24 @@ async def transaction(dut,context,late_mismatch=False,identity=False,crc_bad=Fal
 
 @cocotb.test()
 async def firm_card_protocol_test(dut):
+    profile=os.environ.get('FIRM_GL_PROFILE','full')
+    assert profile in ('full','identity_crc','proof_recovery'),'unknown GL profile'
+    dut._log.info('Functional profile: %s',profile)
     cocotb.start_soon(Clock(dut.clk,25,unit='ns').start())
     dut.ena.value=1;dut.rst_n.value=0;dut.ui_in.value=5;dut.uio_in.value=0xff
     await ClockCycles(dut.clk,40)
     assert int(dut.uo_out.value)==9 and int(dut.uio_oe.value)==0
     dut.rst_n.value=1
     await ClockCycles(dut.clk,CPB*2)
-    await transaction(dut,0,identity=True)
-    await transaction(dut,0)
-    await transaction(dut,1,identity=True,crc_bad=True)
-    await transaction(dut,1,identity=True)
+    if profile in ('full','identity_crc'):
+        await transaction(dut,0,identity=True)
+        await transaction(dut,0)
+        await transaction(dut,1,identity=True,crc_bad=True)
+        await transaction(dut,1,identity=True)
+    if profile=='identity_crc':return
+    if profile=='proof_recovery':
+        # Recreate precisely the identity/context precondition at the chain split.
+        await transaction(dut,1,identity=True)
     await transaction(dut,1,True)
     await transaction(dut,1)
     # Dropped host frame must invalidate ownership and recover after quiet time.
