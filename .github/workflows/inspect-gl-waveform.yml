@@ -1,0 +1,30 @@
+name: inspect-gl-waveform
+on:
+  push:
+    paths: ['tools/inspect_gl_waveform.py', '.github/workflows/inspect-gl-waveform.yml']
+  workflow_dispatch:
+permissions:
+  contents: read
+  actions: read
+jobs:
+  inspect:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v6
+      - uses: actions/download-artifact@v4
+        with:
+          name: gatelevel_test_results
+          run-id: 43649550562
+          github-token: ${{ github.token }}
+          path: gl-evidence
+      - name: Decode retained failed GL wire activity
+        run: |
+          sudo apt-get update && sudo apt-get install -y gtkwave
+          python3 -B tools/inspect_gl_waveform.py --root gl-evidence --output gl-wire-review.json
+      - uses: actions/upload-artifact@v7
+        if: always()
+        with:
+          name: gl-wire-review
+          path: gl-wire-review.json
+          if-no-files-found: error
