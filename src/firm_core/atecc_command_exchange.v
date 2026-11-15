@@ -37,6 +37,8 @@ module atecc_command_exchange #(
     reg [cw(TOTAL_TIMEOUT)-1:0] elapsed;
     reg [cw(MAX_READ_ATTEMPTS+1)-1:0] attempts;
     reg write_req,read_req;
+    (* keep=1 *) reg write_grant;
+    (* keep=1 *) reg read_grant;
     wire write_done,write_cleanup,write_scl,write_sda,write_ready;
     wire [2:0] write_err;
     wire read_ready,read_done,read_ok,read_retry,read_scl,read_sda,read_valid;
@@ -49,20 +51,23 @@ module atecc_command_exchange #(
     wire expired=elapsed>=TOTAL_TIMEOUT-1;
     wire invalid_context=state==IDLE || state>POLL || saved_length<7 || saved_length>67 ||
         (saved_count!=4 && saved_count!=35 && saved_count!=67) || attempts>MAX_READ_ATTEMPTS ||
-        (state==EXEC_WAIT && phase_count>=EXEC_WAIT_CYCLES) || (state==POLL && phase_count>=POLL_CYCLES);
+        (state==EXEC_WAIT && phase_count>=EXEC_WAIT_CYCLES) || (state==POLL && phase_count>=POLL_CYCLES) ||
+        write_grant!=(state==WRITE) || read_grant!=(state==READ_START || state==READ);
     wire active=busy && !abort && !expired && !invalid_context;
-    wire write_active=active && state==WRITE;
-    wire read_active=active && (state==READ_START || state==READ);
+    // Fault/expiry checks still run at the same controlling clock edge. Their
+    // multi-bit combinational decoders must not drive asynchronous reset pins.
+    wire write_active=busy && write_grant;
+    wire read_active=busy && read_grant;
     assign ext_reset_n=rst_n && (write_active || (read_active && read_bus_reset_n));
-    assign ext_req=write_active ? write_req : (read_active && read_bus_req);
+    assign ext_req=active && (write_active ? write_req : (read_active && read_bus_req));
     assign ext_read_mode=read_active;
     assign ext_address=write_active ? saved_address : read_bus_address;
     assign ext_length=write_active ? {1'b0,saved_length} : {1'b0,read_bus_count};
-    assign ext_tx_valid=write_active && tx_valid;
+    assign ext_tx_valid=active && write_active && tx_valid;
     assign ext_tx_data=tx_data;
     assign ext_rx_ready=read_active ? read_bus_rx_ready : 1'b1;
     assign ready=!busy && !abort;
-    assign tx_ready=write_active && write_ready;
+    assign tx_ready=active && write_active && write_ready;
     assign tentative_valid=active && state==READ && read_valid;
     assign scl_low=SHARE_BUS ? ((write_active || read_active) && shared_scl) :
         ((write_active && write_scl) || (read_active && read_scl));
@@ -133,37 +138,44 @@ module atecc_command_exchange #(
             state<=IDLE;saved_address<=0;saved_length<=0;saved_count<=0;
             phase_count<=0;attempts<=0;write_req<=0;read_req<=0;
             busy<=0;done<=0;packet_ok<=0;err<=0;detail_error<=0;transport_detail<=0;
+            write_grant<=0;read_grant<=0;
         end else begin
             done<=0;write_req<=0;read_req<=0;
             if(abort) begin
+                write_grant<=0;read_grant<=0;
                 state<=IDLE;busy<=0;done<=busy;packet_ok<=0;err<=1;detail_error<=0;transport_detail<=0;
             end else if(!busy) begin
+                write_grant<=0;read_grant<=0;
                 if(req && ready) begin
                     saved_address<=address;saved_length<=command_length;saved_count<=response_count;
                     phase_count<=0;attempts<=0;packet_ok<=0;err<=0;detail_error<=0;transport_detail<=0;
                     if(command_length<7 || command_length>67 || (response_count!=4 && response_count!=35 && response_count!=67)) begin done<=1;err<=5;end
-                    else begin state<=WRITE;busy<=1;write_req<=1;end
+                    else begin state<=WRITE;busy<=1;write_req<=1;write_grant<=1;end
                 end
             end else if(invalid_context) begin
+                write_grant<=0;read_grant<=0;
                 state<=IDLE;busy<=0;done<=1;packet_ok<=0;err<=6;
             end else if(expired) begin
+                write_grant<=0;read_grant<=0;
                 state<=IDLE;busy<=0;done<=1;packet_ok<=0;err<=4;
             end else begin
 
                 case(state)
                     WRITE: if(write_done) begin
+                        write_grant<=0;
                         if(write_err!=0 || write_cleanup) begin state<=IDLE;busy<=0;done<=1;err<=2;detail_error<=write_err;end
                         else begin state<=EXEC_WAIT;phase_count<=0;end
                     end
-                    EXEC_WAIT: if(phase_count==EXEC_WAIT_CYCLES-1) begin state<=READ_START;phase_count<=0;end
+                    EXEC_WAIT: if(phase_count==EXEC_WAIT_CYCLES-1) begin state<=READ_START;phase_count<=0;read_grant<=1;end
                                else phase_count<=phase_count+1'b1;
                     READ_START: if(read_ready) begin state<=READ;read_req<=1;attempts<=attempts+1'b1;end
                     READ: if(read_done) begin
+                        read_grant<=0;
                         if(read_ok && read_err==0) begin state<=IDLE;busy<=0;done<=1;packet_ok<=1;end
                         else if(read_retry && attempts<MAX_READ_ATTEMPTS) begin state<=POLL;phase_count<=0;end
                         else begin state<=IDLE;busy<=0;done<=1;packet_ok<=0;err<=3;detail_error<=read_err;transport_detail<=read_detail;end
                     end
-                    POLL: if(phase_count==POLL_CYCLES-1) begin state<=READ_START;phase_count<=0;end
+                    POLL: if(phase_count==POLL_CYCLES-1) begin state<=READ_START;phase_count<=0;read_grant<=1;end
                           else phase_count<=phase_count+1'b1;
                 endcase
             end
