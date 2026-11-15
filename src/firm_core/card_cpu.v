@@ -1,6 +1,6 @@
 // Experimental shared-writeback CPU with 16-byte public scratch RAM.
 // Verilog-2001, intended for Quartus II 13.1 / Cyclone IV E
-module card_cpu(
+module card_cpu #(parameter integer REGISTER_INSTRUCTION=0)(
     input  wire        clk,
     input  wire        reset_n,
 
@@ -44,10 +44,32 @@ module card_cpu(
     reg [7:0] scratch [0:15];
     reg [15:0] scratch_valid;
 
-    wire [3:0] opcode = rom_data[15:12];
-    wire [2:0] rd     = rom_data[11:9];
-    wire [2:0] rs     = rom_data[8:6];
-    wire [7:0] imm8   = rom_data[7:0];
+    // Registered fetch separates PC/ROM selection from execution/MMIO logic.
+    // Legacy standalone mode remains one instruction per clock; integrated mode
+    // executes on alternate clocks. MMIO strobes and architectural writes occur
+    // only at retirement, so fetch cannot consume or duplicate a peripheral take.
+    reg [15:0] instruction;
+    wire execute_phase;
+    generate if(REGISTER_INSTRUCTION) begin: registered_fetch
+        reg phase;
+        assign execute_phase=phase;
+        always @(posedge clk) begin
+            if(reset_n && !halted && !execute_phase) instruction<=rom_data;
+        end
+        always @(posedge clk or negedge reset_n) begin
+            if(!reset_n) phase<=0;
+            else if(!halted) phase<=!execute_phase;
+        end
+    end else begin: direct_fetch
+        assign execute_phase=1'b1;
+    end endgenerate
+    wire execute=(!REGISTER_INSTRUCTION || execute_phase);
+    wire [15:0] decoded_instruction=REGISTER_INSTRUCTION ? instruction : rom_data;
+
+    wire [3:0] opcode = decoded_instruction[15:12];
+    wire [2:0] rd     = decoded_instruction[11:9];
+    wire [2:0] rs     = decoded_instruction[8:6];
+    wire [7:0] imm8   = decoded_instruction[7:0];
     wire ram_address_valid=(imm8[7:4]==0);
     wire [7:0] ram_read=scratch_valid[imm8[3:0]] ? scratch[imm8[3:0]] : 8'h00;
 
@@ -57,8 +79,8 @@ module card_cpu(
     assign debug_r0 = regs[0];
 
     // I/O bus is combinational; peripherals sample io_we/io_re on clk edge.
-    assign io_re    = (reset_n && !halted && opcode == OP_IN);
-    assign io_we    = (reset_n && !halted && opcode == OP_OUT);
+    assign io_re    = (reset_n && !halted && execute && opcode == OP_IN);
+    assign io_we    = (reset_n && !halted && execute && opcode == OP_OUT);
     assign io_addr  = imm8;
     assign io_wdata = regs[rd];
 
@@ -87,7 +109,7 @@ module card_cpu(
     // Data is public scratch only. Reset invalidates its logical view; it does
     // not physically erase retained bank bits. Match reference conditional semantics.
     always @(posedge clk) begin
-        if(reset_n && !halted && opcode==OP_ST) begin
+        if(reset_n && !halted && execute && opcode==OP_ST) begin
             if(!ram_address_valid) begin end
             else scratch[imm8[3:0]] <= regs[rd];
         end
@@ -96,14 +118,14 @@ module card_cpu(
     generate for(lane=0;lane<8;lane=lane+1) begin : register_lane
         always @(posedge clk or negedge reset_n) begin
             if(!reset_n) regs[lane]<=0;
-            else if(!halted && write_enable && rd==lane) regs[lane]<=write_data;
+            else if(!halted && execute && write_enable && rd==lane) regs[lane]<=write_data;
         end
     end endgenerate
     always @(posedge clk or negedge reset_n) begin
         if(!reset_n) begin
             pc<=0;halted<=0;flag_z<=1;flag_c<=0;
             scratch_valid <= 16'h0000; memory_fault<=0;
-        end else if(!halted) begin
+        end else if(!halted && execute) begin
             pc<=pc+8'h01;
             if(write_enable) flag_z<=(write_data==0);
             if(opcode==OP_ADD) flag_c<=add_value[8];

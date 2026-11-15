@@ -25,4 +25,7 @@ for tb in wrapper_tb spi_wrapper_tb; do
  vvp "build/$tb" | tee "reports/current/$tb.log"
 done
 python3 -B tools/check_cpu_isa.py --sim iverilog --out reports/current/cpu-isa
+python3 -B tools/check_registered_fetch.py --out reports/current/registered-fetch
+iverilog -g2012 -s registered_fetch_ram_tb -o build/registered_fetch_ram src/firm_core/card_cpu.v test/registered_fetch_ram_tb.v
+vvp build/registered_fetch_ram | tee reports/current/registered_fetch_ram.log
 printf 'PASS: RTL and generic synthesis only; physical signoff is separate.\n'
