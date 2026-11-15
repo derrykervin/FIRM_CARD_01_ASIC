@@ -33,7 +33,7 @@ module firm_secure_cpu_port #(
     assign legacy_io_addr=cpu_io_addr;
     assign legacy_io_wdata=cpu_io_wdata;
     assign cpu_rdata=secure_selected ? endpoint_rdata : legacy_io_rdata;
-    card_cpu cpu(.clk(clk),.reset_n(rst_n),.rom_addr(rom_addr),.rom_data(rom_data),
+    card_cpu #(.REGISTER_INSTRUCTION(1)) cpu(.clk(clk),.reset_n(rst_n),.rom_addr(rom_addr),.rom_data(rom_data),
         .io_re(cpu_io_re),.io_we(cpu_io_we),.io_addr(cpu_io_addr),.io_wdata(cpu_io_wdata),
         .io_rdata(cpu_rdata),.debug_pc(debug_pc),.debug_r0(debug_r0),.halted(halted),.memory_fault(memory_fault));
     firm_secure_endpoint #(
