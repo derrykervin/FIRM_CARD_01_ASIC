@@ -12,10 +12,11 @@ import subprocess
 p=argparse.ArgumentParser(description=__doc__)
 p.add_argument('--root',type=Path,required=True)
 p.add_argument('--output',type=Path,required=True)
+p.add_argument('--converter',default='fst2vcd')
 a=p.parse_args()
 files=list(a.root.rglob('*.fst'));assert len(files)==1,files
 fst=files[0]
-process=subprocess.Popen(['fst2vcd','-f',str(fst)],stdout=subprocess.PIPE,text=True)
+process=subprocess.Popen([a.converter,'-f',str(fst)],stdout=subprocess.PIPE,text=True)
 scope=[];ids={};wanted={'scl_line','sda_line','uart_tx','uio_in','uio_oe','uo_out'}
 values={};pending={};time=0;in_header=True;timescale='';reading_scale=False
 uart=[];uart_errors=[];uart_bits=None;next_sample=None;bit_ticks=None
