@@ -18,7 +18,7 @@ int main(int argc,char **argv) {
  if(argc!=3 || strcmp(argv[1],"-f")){fprintf(stderr,"usage: fst_selected -f input.fst\n");return 2;}
  void *reader=fstReaderOpen(argv[2]);if(!reader)return 3;
  widths=calloc((size_t)fstReaderGetMaxHandle(reader)+1,sizeof(*widths));if(!widths)return 4;
- int exponent=fstReaderGetTimescale(reader),depth=0,top=0,found=0;
+ int exponent=fstReaderGetTimescale(reader),depth=0,top=0,found=0,probes=0;
  const char *unit="ps";int count=1;
  if(exponent>=-15 && exponent<=-13){unit="fs";exponent+=15;}
  else if(exponent>=-12 && exponent<=-10){unit="ps";exponent+=12;}
@@ -39,6 +39,26 @@ int main(int argc,char **argv) {
     fstHandle handle=row->u.var.handle;found++;widths[handle]=row->u.var.length;
     fstReaderSetFacProcessMask(reader,handle);
     printf("$var wire %u %u %s $end\n",row->u.var.length,handle,wanted[i]);
+   }
+  }
+  else if(row->htyp==FST_HT_VAR && depth>=2 && top) {
+   const char *name=row->u.var.name;
+   const char *terms[]={".state",".received",".response_pattern",".invalid_context",
+    ".active",".read_active",".ext_reset_n",".bus_done",".bus_busy",".bus_req",
+    ".selected_bus_reset_n",".wake_enabled",".abort_byte",".rx_valid",".byte_done"};
+   if(!strstr(name,"wake_engine") && !strstr(name,"shared_transport") &&
+      !strstr(name,"shared_bus") && !strstr(name,"selected_bus_reset_n") &&
+      !strstr(name,"wake_enabled"))continue;
+   int match=0;
+   for(size_t i=0;i<sizeof(terms)/sizeof(terms[0]);i++) {
+    const char *end=strstr(name,terms[i]);
+    if(end){end+=strlen(terms[i]);if(!*end || *end==' ' || *end=='[')match=1;}
+   }
+   if(match) {
+    fstHandle handle=row->u.var.handle;widths[handle]=row->u.var.length;
+    fstReaderSetFacProcessMask(reader,handle);
+    printf("$comment PROBE probe%d %s $end\n",probes,name);
+    printf("$var wire %u %u probe%d $end\n",row->u.var.length,handle,probes++);
    }
   }
  }
